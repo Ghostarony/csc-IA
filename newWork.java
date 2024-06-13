@@ -15,8 +15,6 @@ public class NewWork {
     }
 
     public static class workPaneProperties extends JPanel{
-        private FieldPane fieldPane;
-        private ButtonPane buttonPane;
     
         public workPaneProperties() {
             setLayout(new GridBagLayout());
@@ -27,9 +25,9 @@ public class NewWork {
             gbc.fill = GridBagConstraints.BOTH;
             gbc.insets = new Insets(4, 4, 4, 4);
     
-            add((fieldPane = new FieldPane()), gbc);
+            add((new FieldPane()), gbc);
             gbc.gridy++;
-            add((buttonPane = new ButtonPane()), gbc);
+            add((new ButtonPane()), gbc);
         }
     }
     
