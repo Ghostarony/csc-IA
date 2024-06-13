@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+
 import javax.swing.border.*;
 
 public class NewWork {
@@ -112,6 +114,7 @@ public class NewWork {
             add(new JLabel("       "), gbc);
             gbc.gridx++;
             add((cancel = new JButton("Cancel")), gbc);
+            cancel.addActionListener((ActionEvent e) -> System.exit(0));
         }
     }
 }
