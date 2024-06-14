@@ -111,6 +111,9 @@ public class NewWork {
         public String getLength(){
             return length.getText();
         }
+        public String getType(){
+            return typelist.getSelectedItem().toString();
+        }
         public String getComments(){
             return comments.getText();
         }
