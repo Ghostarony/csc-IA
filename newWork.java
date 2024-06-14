@@ -111,6 +111,10 @@ public class NewWork {
         public String getLength(){
             return length.getText();
         }
+        public String getComments(){
+            return comments.getText();
+        }
+        
     }
 
     public static class ButtonPane extends JPanel{
