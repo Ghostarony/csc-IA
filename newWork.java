@@ -80,7 +80,7 @@ public class NewWork {
             //type
             add(new JLabel("Type: "), gbc);
             gbc.gridy++;
-            String[] typeStrings = {"Physical", "E-book", "Web novel", "Fanfic", "Other", "Unspecified"};
+            String[] typeStrings = {"Physical book", "E-book", "Web novel", "Fanfic", "Comic", "Other", "Unspecified"};
             add((typelist = new JComboBox(typeStrings)), gbc);
             gbc.gridy++;
 
