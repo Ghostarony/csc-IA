@@ -9,7 +9,7 @@ public class NewWork {
         JFrame frame = new JFrame("Add new work");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(new workPaneProperties());
-        frame.setSize(300, 400);
+        frame.setSize(260, 450);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
@@ -32,7 +32,8 @@ public class NewWork {
     }
     
     public static class FieldPane extends JPanel{
-        private JTextField title, author, publication, finished;
+        private JTextField title, author, publication, finished, length;
+        private JTextArea comments;
         private JComboBox typelist;
 
         public FieldPane(){
@@ -48,13 +49,13 @@ public class NewWork {
             //title
             add(new JLabel("Title: "), gbc); 
             gbc.gridy++;
-            add((title = new JTextField(15)), gbc); 
+            add((title = new JTextField(20)), gbc); 
             gbc.gridy++;
 
             //author
             add(new JLabel("Author: "), gbc); 
             gbc.gridy++;
-            add((author = new JTextField(15)), gbc); 
+            add((author = new JTextField(20)), gbc); 
             gbc.gridy++;
 
             gbc.fill = GridBagConstraints.NONE;
@@ -70,11 +71,24 @@ public class NewWork {
             add((finished = new JTextField(10)), gbc); 
             gbc.gridy++;
 
+            //length
+            add(new JLabel("Length: "), gbc);
+            gbc.gridy++;
+            add((length = new JTextField(10)), gbc);
+            gbc.gridy++;
+
             //type
             add(new JLabel("Type: "), gbc);
             gbc.gridy++;
             String[] typeStrings = {"Physical", "E-book", "Web novel", "Fanfic", "Other", "Unspecified"};
             add((typelist = new JComboBox(typeStrings)), gbc);
+            gbc.gridy++;
+
+            //comments
+            add(new JLabel("Comments: "), gbc);
+            gbc.gridy++;
+            add((comments = new JTextArea(5, 20)),gbc);
+            comments.setLineWrap(true);
             gbc.gridy++;
 
             add(new JLabel(" "), gbc);
@@ -93,6 +107,9 @@ public class NewWork {
         }
         public String getFinishedDate(){
             return finished.getText();
+        }
+        public String getLength(){
+            return length.getText();
         }
     }
 
