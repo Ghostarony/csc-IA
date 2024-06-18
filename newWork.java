@@ -1,7 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-
+import java.awt.event.ActionListener;
 import javax.swing.border.*;
 
 public class NewWork {
@@ -32,9 +32,9 @@ public class NewWork {
     }
     
     public static class FieldPane extends JPanel{
-        private JTextField title, author, publication, finished, length;
-        private JTextArea comments;
-        private JComboBox typelist;
+        public static JTextField title, author, publication, finished, length;
+        public static JTextArea comments;
+        public static JComboBox typelist;
 
         public FieldPane(){
             setLayout(new GridBagLayout());
@@ -95,26 +95,26 @@ public class NewWork {
             gbc.gridy++;
         }
 
-        //get type box contents
-        public String getTitle() {
+        //get box contents
+        public static String getTitle() {
             return title.getText();
         }
-        public String getAuthor() {
+        public static String getAuthor() {
             return author.getText();
         }
-        public String getPublicationDate() {
+        public static String getPublicationDate() {
             return publication.getText();
         }
-        public String getFinishedDate(){
+        public static String getFinishedDate(){
             return finished.getText();
         }
-        public String getLength(){
+        public static String getLength(){
             return length.getText();
         }
-        public String getType(){
+        public static String getType(){
             return typelist.getSelectedItem().toString();
         }
-        public String getComments(){
+        public static String getComments(){
             return comments.getText();
         }
         
@@ -122,6 +122,7 @@ public class NewWork {
 
     public static class ButtonPane extends JPanel{
         private JButton confirm, cancel;
+        public String title, name;
     
         public ButtonPane(){
             setLayout(new GridBagLayout());
@@ -132,6 +133,13 @@ public class NewWork {
             
     
             add((confirm = new JButton("Confirm")), gbc);
+            //String nameVariable = (title.replace(" ", "")).toLowerCase();
+            confirm.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent ae){
+                    Work tempName = new Work(FieldPane.getTitle(), FieldPane.getAuthor(), FieldPane.getPublicationDate(), 
+                    FieldPane.getFinishedDate(), FieldPane.getLength(), FieldPane.getType(), FieldPane.getComments());
+                }
+             });
             gbc.gridx++;
             add(new JLabel("       "), gbc);
             gbc.gridx++;
