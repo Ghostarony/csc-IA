@@ -19,6 +19,8 @@ public class APP extends JFrame{
         tabbedPane.addTab("Bookshelf", panel1);
         JComponent panel2 = makeTextPanel("Panel #2");
         tabbedPane.addTab("Statistics", panel2);
+        JComponent panel3 = makeTextPanel("Panel #3");
+        tabbedPane.addTab("Goals", panel3);
         add(tabbedPane);
     }
     protected JComponent makeTextPanel(String text) {
