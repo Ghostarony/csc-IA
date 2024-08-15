@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.border.*;
+import ibadts.*;
 
 public class NewWork {
     public static void main(String[] args) {
@@ -123,6 +124,7 @@ public class NewWork {
     public static class ButtonPane extends JPanel{
         private JButton confirm, cancel;
         public String title, name;
+        public Queue<Work> works = new Queue<>();
     
         public ButtonPane(){
             setLayout(new GridBagLayout());
@@ -130,14 +132,19 @@ public class NewWork {
             gbc.gridx = 0;
             gbc.gridy = 0;
             gbc.anchor = GridBagConstraints.CENTER;
-            
+
     
             add((confirm = new JButton("Confirm")), gbc);
             //String nameVariable = (title.replace(" ", "")).toLowerCase();
+
             confirm.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent ae){
+                    //String searchablename = FieldPane.getTitle().replace(" ", "").toLowerCase();
                     Work tempName = new Work(FieldPane.getTitle(), FieldPane.getAuthor(), FieldPane.getPublicationDate(), 
                     FieldPane.getFinishedDate(), FieldPane.getLength(), FieldPane.getType(), FieldPane.getComments());
+                    works.enqueue(tempName);
+                    System.out.println("saved...");
+                    System.exit(0);
                 }
              });
             gbc.gridx++;
