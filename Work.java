@@ -14,6 +14,7 @@ public class Work {
 
     }
 
+    //getters
     public String getTitle(){
         return title;
     }
@@ -36,6 +37,7 @@ public class Work {
         return comments;
     }
 
+    //seters
     public void setTitle(String title){
         this.title=title;
     }
