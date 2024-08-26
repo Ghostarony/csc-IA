@@ -18,17 +18,18 @@ public class NewWork {
     public static class workPaneProperties extends JPanel{
     
         public workPaneProperties() {
-            setLayout(new GridBagLayout());
+            setLayout(new GridBagLayout()); //creates a new grid bag layout manager
             GridBagConstraints gbc = new GridBagConstraints();
+            //sets intial component positions:
             gbc.gridx = 0;
             gbc.gridy = 0;
-            gbc.anchor = GridBagConstraints.WEST;
-            gbc.fill = GridBagConstraints.BOTH;
+            gbc.anchor = GridBagConstraints.WEST; //sets a anchor location for components smaller than window they are located
+            gbc.fill = GridBagConstraints.BOTH; //sets fill condition to making the component fill the entire area
             gbc.insets = new Insets(4, 4, 4, 4);
     
-            add((new FieldPane()), gbc);
+            add((new FieldPane()), gbc); //adds FieldPane JPanel into the workPaneProperties JPanel -> into frame JFrame
             gbc.gridy++;
-            add((new ButtonPane()), gbc);
+            add((new ButtonPane()), gbc); //adds ButtonPane JPanel into -"-
         }
     }
     
@@ -39,64 +40,66 @@ public class NewWork {
 
         public FieldPane(){
             setLayout(new GridBagLayout());
+            //sets a border around the FieldPane components:
             setBorder(new CompoundBorder(new TitledBorder("Add new work"), new EmptyBorder(8, 0, 0, 0)));
             GridBagConstraints gbc = new GridBagConstraints();
+            //sets intial component positions:
             gbc.gridx = 0;
             gbc.gridy = 0;
             gbc.weightx = 0;
             gbc.anchor = GridBagConstraints.NORTHWEST;
-
             gbc.fill = GridBagConstraints.HORIZONTAL;
-            //title
+
+            //creates title text component and textfield component
             add(new JLabel("Title: "), gbc); 
             gbc.gridy++;
             add((title = new JTextField(20)), gbc); 
             gbc.gridy++;
 
-            //author
+            //creates author text component and textfield component
             add(new JLabel("Author: "), gbc); 
             gbc.gridy++;
             add((author = new JTextField(20)), gbc); 
             gbc.gridy++;
 
-            gbc.fill = GridBagConstraints.NONE;
-            //published
+            gbc.fill = GridBagConstraints.NONE; //set fill condition to not resize component to fit the window
+            //creates publication text component and textfield component
             add(new JLabel("Published: "), gbc); 
             gbc.gridy++;
             add((publication = new JTextField(5)), gbc); 
             gbc.gridy++;
 
-            //finished
+            //creates finishing date text component and textfield component
             add(new JLabel("Finished: "), gbc); 
             gbc.gridy++;
             add((finished = new JTextField(10)), gbc); 
             gbc.gridy++;
 
-            //length
+            //creates work length text component and textfield component
             add(new JLabel("Length: "), gbc);
             gbc.gridy++;
             add((length = new JTextField(10)), gbc);
             gbc.gridy++;
 
-            //type
+            //creates work type text component and a JComboBox component including all included work types
             add(new JLabel("Type: "), gbc);
             gbc.gridy++;
             String[] typeStrings = {"Physical book", "E-book", "Web novel", "Fanfic", "Comic", "Other", "Unspecified"};
             add((typelist = new JComboBox(typeStrings)), gbc);
             gbc.gridy++;
 
-            //comments
+            //creates comments text component and text area component
             add(new JLabel("Comments: "), gbc);
             gbc.gridy++;
             add((comments = new JTextArea(5, 20)),gbc);
-            comments.setLineWrap(true);
+            comments.setLineWrap(true); //sets line wrapping for the text area to true
             gbc.gridy++;
 
-            add(new JLabel(" "), gbc);
+            add(new JLabel(" "), gbc); //creates some enmpty space for more pleasing layout
             gbc.gridy++;
         }
 
-        //get box contents
+        //static methods to retrieve contents from each textbox + combobox and text area
         public static String getTitle() {
             return title.getText();
         }
@@ -124,7 +127,7 @@ public class NewWork {
     public static class ButtonPane extends JPanel{
         private JButton confirm, cancel;
         public String title, name;
-        public Queue<Work> works = new Queue<>();
+        public Queue<Work> works = new Queue<>(); //creates a queue to store works in
     
         public ButtonPane(){
             setLayout(new GridBagLayout());
@@ -133,25 +136,23 @@ public class NewWork {
             gbc.gridy = 0;
             gbc.anchor = GridBagConstraints.CENTER;
 
-    
-            add((confirm = new JButton("Confirm")), gbc);
-            //String nameVariable = (title.replace(" ", "")).toLowerCase();
-
-            confirm.addActionListener(new ActionListener(){
+            add((confirm = new JButton("Confirm")), gbc); //creates a new button loabeled confirm
+            confirm.addActionListener(new ActionListener(){ //adds an action listener to the confirm button
                 public void actionPerformed(ActionEvent ae){
-                    //String searchablename = FieldPane.getTitle().replace(" ", "").toLowerCase();
+                    //creates an instance of work that fetches all information from fields of the fieldpane GUI component 
                     Work tempName = new Work(FieldPane.getTitle(), FieldPane.getAuthor(), FieldPane.getPublicationDate(), 
                     FieldPane.getFinishedDate(), FieldPane.getLength(), FieldPane.getType(), FieldPane.getComments());
-                    works.enqueue(tempName);
+                    works.enqueue(tempName); //adds the new work into the works queue
                     System.out.println("saved...");
-                    System.exit(0);
+                    System.exit(0); //exits new work window
                 }
              });
+
             gbc.gridx++;
-            add(new JLabel("       "), gbc);
+            add(new JLabel("       "), gbc); //button spacer
             gbc.gridx++;
-            add((cancel = new JButton("Cancel")), gbc);
-            cancel.addActionListener((ActionEvent e) -> System.exit(0));
+            add((cancel = new JButton("Cancel")), gbc); //creates a button labeled cancel
+            cancel.addActionListener((ActionEvent e) -> System.exit(0)); //action listener on button to exit system
         }
     }
 }
