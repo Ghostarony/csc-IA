@@ -1,4 +1,6 @@
-public class Work {
+import java.io.Serializable;
+
+public class Work implements Serializable{
 
     private String title, author, published, finished, length, type, comments;
 
