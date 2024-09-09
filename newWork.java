@@ -3,16 +3,17 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.border.*;
-import ibadts.*;
 
 public class NewWork {
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Add new work");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(new workPaneProperties());
-        frame.setSize(260, 450);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+    public static JFrame frame; //declare frame
+
+    public NewWork() {
+        frame = new JFrame("Add new work");
+        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.add(new workPaneProperties()); //add JPanel workPaneProperties into the frame frame
+        frame.setSize(260, 450); //sets a size for frame
+        frame.setLocationRelativeTo(null); //makes frame's relative location to the center of the screen
+        frame.setVisible(true); //sets frame visible
     }
 
     public static class workPaneProperties extends JPanel{
@@ -127,7 +128,6 @@ public class NewWork {
     public static class ButtonPane extends JPanel{
         private JButton confirm, cancel;
         public String title, name;
-        public Queue<Work> works = new Queue<>(); //creates a queue to store works in
     
         public ButtonPane(){
             setLayout(new GridBagLayout());
@@ -142,9 +142,9 @@ public class NewWork {
                     //creates an instance of work that fetches all information from fields of the fieldpane GUI component 
                     Work tempName = new Work(FieldPane.getTitle(), FieldPane.getAuthor(), FieldPane.getPublicationDate(), 
                     FieldPane.getFinishedDate(), FieldPane.getLength(), FieldPane.getType(), FieldPane.getComments());
-                    works.enqueue(tempName); //adds the new work into the works queue
-                    System.out.println("saved...");
-                    System.exit(0); //exits new work window
+                    CONTROLLER.works.add(tempName); //adds the new work into the works queue
+                    System.out.println("saved..."); //console verification of everything working (temp)
+                    frame.dispose(); //exits new work window
                 }
              });
 
@@ -152,7 +152,7 @@ public class NewWork {
             add(new JLabel("       "), gbc); //button spacer
             gbc.gridx++;
             add((cancel = new JButton("Cancel")), gbc); //creates a button labeled cancel
-            cancel.addActionListener((ActionEvent e) -> System.exit(0)); //action listener on button to exit system
+            cancel.addActionListener((ActionEvent e) -> frame.dispose()); //action listener on button to close window
         }
     }
 }
