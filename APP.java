@@ -4,9 +4,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class APP extends JFrame{
-    public static void main(String[] args){
-        SwingUtilities.invokeLater(()-> new APP());
-    }
+
     public APP(){
         setSize(1024,600); //give the window a set size un-fullscreened
         setTitle("The lovely book tracker <3"); //name the window
@@ -18,10 +16,8 @@ public class APP extends JFrame{
         //tabs
         JTabbedPane tabbedPane = new JTabbedPane(); //created the tab layout
         tabbedPane.addTab("Bookshelf", new bookshelfPanelProperties()); //add bookshelf tab
-        JComponent panel2 = makeTextPanel("Panel #2");
-        tabbedPane.addTab("Statistics", panel2);
-        JComponent panel3 = makeTextPanel("Panel #3");
-        tabbedPane.addTab("Goals", panel3);
+        tabbedPane.addTab("Statistics", new statsPanelProperties());
+        tabbedPane.addTab("Goals", new goalsPanelProperties());
         add(tabbedPane); //add tabbedpane to the jframe
         tabbedPane.setVisible(true); //set visible
     }
@@ -40,7 +36,7 @@ public class APP extends JFrame{
         public bookshelfPanelProperties() {
             setLayout(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
-            setBackground(new java.awt.Color(103, 181, 124));
+            setBackground(new java.awt.Color(191, 211, 193));
             gbc.gridx = 0;
             gbc.gridy = 0;
             gbc.anchor = GridBagConstraints.WEST;
@@ -58,7 +54,7 @@ public class APP extends JFrame{
         public BookshelfPane1(){
             setLayout(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
-            setBackground(new java.awt.Color(103, 181, 124));
+            setBackground(new java.awt.Color(191, 211, 193));
             gbc.gridx = 0;
             gbc.gridy = 0;
             gbc.weightx = 0;
@@ -78,7 +74,7 @@ public class APP extends JFrame{
         public BookshelfPane2(){
             setLayout(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
-            setBackground(new java.awt.Color(103, 181, 124));
+            setBackground(new java.awt.Color(191, 211, 193));
             gbc.gridx = 0;
             gbc.gridy = 0;
             gbc.weightx = 0;
@@ -97,7 +93,6 @@ public class APP extends JFrame{
         }
     }
     public static class BookshelfPane3 extends JPanel{
-        private JButton newWork;
 
         public BookshelfPane3(){
             setLayout(new GridBagLayout());
@@ -109,6 +104,34 @@ public class APP extends JFrame{
             gbc.anchor = GridBagConstraints.NORTH;
 
             //list work in a table
+        }
+    }
+
+    public static class statsPanelProperties extends JPanel{
+    
+        public statsPanelProperties() {
+            setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            setBackground(new java.awt.Color(194, 239, 238));
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.anchor = GridBagConstraints.WEST;
+            gbc.fill = GridBagConstraints.BOTH;
+            gbc.insets = new Insets(4, 4, 4, 4);    
+        }
+    }
+
+    public static class goalsPanelProperties extends JPanel{
+    
+        public goalsPanelProperties() {
+            setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            setBackground(new java.awt.Color(239, 199, 194));
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.anchor = GridBagConstraints.WEST;
+            gbc.fill = GridBagConstraints.BOTH;
+            gbc.insets = new Insets(4, 4, 4, 4);    
         }
     }
 }
