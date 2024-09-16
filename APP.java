@@ -69,7 +69,7 @@ public class APP extends JFrame{
         }
     }
     public static class BookshelfPane2 extends JPanel{
-        private JTextField searchField;
+        private static JTextField searchField;
 
         public BookshelfPane2(){
             setLayout(new GridBagLayout());
@@ -90,6 +90,10 @@ public class APP extends JFrame{
             Image scaledMagIcon = magIcon.getImage().getScaledInstance(11, 11, Image.SCALE_SMOOTH); //make icon into image and rescale image
             ImageIcon fin = new ImageIcon(scaledMagIcon); //make an icon from rescaled image
             add(new JButton(fin), gbc); //button with magnifying glass icon
+        }
+
+        public static String getSearch() {
+            return searchField.getText();
         }
     }
     public static class BookshelfPane3 extends JPanel{
@@ -112,7 +116,7 @@ public class APP extends JFrame{
         public statsPanelProperties() {
             setLayout(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
-            setBackground(new java.awt.Color(194, 239, 238));
+            setBackground(new java.awt.Color(177, 224, 223));
             gbc.gridx = 0;
             gbc.gridy = 0;
             gbc.anchor = GridBagConstraints.WEST;
