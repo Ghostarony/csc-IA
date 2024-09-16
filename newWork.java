@@ -142,7 +142,7 @@ public class NewWork {
                     //creates an instance of work that fetches all information from fields of the fieldpane GUI component 
                     Work tempName = new Work(FieldPane.getTitle(), FieldPane.getAuthor(), FieldPane.getPublicationDate(), 
                     FieldPane.getFinishedDate(), FieldPane.getLength(), FieldPane.getType(), FieldPane.getComments());
-                    CONTROLLER.works.add(tempName); //adds the new work into the works queue
+                    CONTROLLER.workList.add(tempName); //adds the new work into the works queue
                     System.out.println("saved..."); //console verification of everything working (temp)
                     frame.dispose(); //exits new work window
                 }
