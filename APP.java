@@ -1,34 +1,54 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.awt.event.ActionEvent;
 
 public class APP extends JFrame{
+    public static JFrame frame;
 
     public APP(){
-        setSize(1024,600); //give the window a set size un-fullscreened
-        setTitle("The lovely book tracker <3"); //name the window
-        setLocationRelativeTo(null); //make centered un-fullscreened
-        setExtendedState(JFrame.MAXIMIZED_BOTH); //make fullscreen by default
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //set to exit system when closed
-        setVisible(true);
+        frame = new JFrame("The lovely book tracker <3");
+        frame.setSize(1024,600); //give the window a set size un-fullscreened
+        frame.setLocationRelativeTo(null); //make centered when un-fullscreened
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH); //make fullscreen by default
+        frame.setVisible(true);
 
         //tabs
         JTabbedPane tabbedPane = new JTabbedPane(); //created the tab layout
         tabbedPane.addTab("Bookshelf", new bookshelfPanelProperties()); //add bookshelf tab
         tabbedPane.addTab("Statistics", new statsPanelProperties());
         tabbedPane.addTab("Goals", new goalsPanelProperties());
-        add(tabbedPane); //add tabbedpane to the jframe
+        frame.add(tabbedPane); //add tabbedpane to the jframe
         tabbedPane.setVisible(true); //set visible
-    }
-    
-    protected JComponent makeTextPanel(String text) {
-        JPanel panel = new JPanel(false);
-        JLabel filler = new JLabel(text);
-        filler.setHorizontalAlignment(JLabel.CENTER);
-        panel.setLayout(new GridLayout(1, 1));
-        panel.add(filler);
-        return panel;
+
+        frame.addWindowListener(new java.awt.event.WindowAdapter() { //implement a listener for closing the window
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                try (FileOutputStream fos = new FileOutputStream("worksData");
+                    ObjectOutputStream oos = new ObjectOutputStream(fos);) {
+                    oos.writeObject(CONTROLLER.workList); //write list into file
+                    }
+                    catch (FileNotFoundException e) { //file not found exception
+                        System.out.println("File not found : " + e);
+                        throw new RuntimeException(e);
+                    }
+                    catch (IOException ioe) { //io exception
+                        System.out.println("Error while writing data : " + ioe);
+                        ioe.printStackTrace();
+                }
+
+                if (JOptionPane.showConfirmDialog(frame, 
+                    "Do you want to exit the program?", "Exit Program", //ask for confirmation before closing the program
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+                    System.exit(0); //close system if answer is yes
+                }
+            }
+        });
     }
 
     public static class bookshelfPanelProperties extends JPanel{
