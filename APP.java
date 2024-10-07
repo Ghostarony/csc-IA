@@ -90,9 +90,6 @@ public class APP extends JFrame{
     }
     public static class BookshelfPane2 extends JPanel{
         private static JTextField searchField;
-        public JScrollPane scroll;
-        public TableRowSorter<MyTableModel> sorter;
-        public JTable table;
 
         public BookshelfPane2(){
             setLayout(new GridBagLayout());
@@ -113,36 +110,10 @@ public class APP extends JFrame{
             Image scaledMagIcon = magIcon.getImage().getScaledInstance(11, 11, Image.SCALE_SMOOTH); //make icon into image and rescale image
             ImageIcon fin = new ImageIcon(scaledMagIcon); //make an icon from rescaled image
             add(new JButton(fin), gbc); //button with magnifying glass icon
-
-            MyTableModel model = new MyTableModel();
-            sorter = new TableRowSorter<MyTableModel>(model);
-            table = new JTable(model);
-            table.setRowSorter(sorter);
-            table.setFillsViewportHeight(true);
-            table.setAutoCreateRowSorter(true);
-            add(scroll = new JScrollPane(table), gbc);
         }
 
         public static String getSearch() {
             return searchField.getText();
-        }
-        class MyTableModel extends AbstractTableModel{
-
-            String[] headers = {"Finished", "Title", "Author", "Publication", "Type", "Length", "Comments"};
-            Object[][] data = {{"temp", "way longer temp to fill space", "temp", "temp", "temp", "temp", "temp", "temp", "temp"}};
-            
-            public int getColumnCount() {
-                return headers.length;
-            }
-            public int getRowCount() {
-                return data.length;
-            }
-            public String getColumnName(int col) {
-                return headers[col];
-            }
-            public Object getValueAt(int row, int col) {
-                return data[row][col];
-            }
         }
     }
     public static class BookshelfPane3 extends JPanel{
