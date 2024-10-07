@@ -1,4 +1,8 @@
 import javax.swing.*;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableRowSorter;
+
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
@@ -31,22 +35,16 @@ public class APP extends JFrame{
                 try (FileOutputStream fos = new FileOutputStream("worksData");
                     ObjectOutputStream oos = new ObjectOutputStream(fos);) {
                     oos.writeObject(CONTROLLER.workList); //write list into file
-                    }
-                    catch (FileNotFoundException e) { //file not found exception
-                        System.out.println("File not found : " + e);
-                        throw new RuntimeException(e);
-                    }
-                    catch (IOException ioe) { //io exception
-                        System.out.println("Error while writing data : " + ioe);
-                        ioe.printStackTrace();
                 }
-
-                if (JOptionPane.showConfirmDialog(frame, 
-                    "Do you want to exit the program?", "Exit Program", //ask for confirmation before closing the program
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
-                    System.exit(0); //close system if answer is yes
+                catch (FileNotFoundException e) { //file not found exception
+                    System.out.println("File not found : " + e);
+                    throw new RuntimeException(e);
                 }
+                catch (IOException ioe) { //io exception
+                    System.out.println("Error while writing data : " + ioe);
+                    ioe.printStackTrace();
+                }
+                System.exit(0);
             }
         });
     }
@@ -65,7 +63,9 @@ public class APP extends JFrame{
 
             add((new BookshelfPane1()), gbc);
             gbc.gridy++;
-            add ((new BookshelfPane2()), gbc);    
+            add ((new BookshelfPane2()), gbc);  
+            gbc.gridy++;
+            //add((new BookshelfPane3()), gbc);  
         }
     }
     public static class BookshelfPane1 extends JPanel{
@@ -90,6 +90,9 @@ public class APP extends JFrame{
     }
     public static class BookshelfPane2 extends JPanel{
         private static JTextField searchField;
+        public JScrollPane scroll;
+        public TableRowSorter<MyTableModel> sorter;
+        public JTable table;
 
         public BookshelfPane2(){
             setLayout(new GridBagLayout());
@@ -110,13 +113,40 @@ public class APP extends JFrame{
             Image scaledMagIcon = magIcon.getImage().getScaledInstance(11, 11, Image.SCALE_SMOOTH); //make icon into image and rescale image
             ImageIcon fin = new ImageIcon(scaledMagIcon); //make an icon from rescaled image
             add(new JButton(fin), gbc); //button with magnifying glass icon
+
+            MyTableModel model = new MyTableModel();
+            sorter = new TableRowSorter<MyTableModel>(model);
+            table = new JTable(model);
+            table.setRowSorter(sorter);
+            table.setFillsViewportHeight(true);
+            table.setAutoCreateRowSorter(true);
+            add(scroll = new JScrollPane(table), gbc);
         }
 
         public static String getSearch() {
             return searchField.getText();
         }
+        class MyTableModel extends AbstractTableModel{
+
+            String[] headers = {"Finished", "Title", "Author", "Publication", "Type", "Length", "Comments"};
+            Object[][] data = {{"temp", "way longer temp to fill space", "temp", "temp", "temp", "temp", "temp", "temp", "temp"}};
+            
+            public int getColumnCount() {
+                return headers.length;
+            }
+            public int getRowCount() {
+                return data.length;
+            }
+            public String getColumnName(int col) {
+                return headers[col];
+            }
+            public Object getValueAt(int row, int col) {
+                return data[row][col];
+            }
+        }
     }
     public static class BookshelfPane3 extends JPanel{
+        public JScrollPane scroll;
 
         public BookshelfPane3(){
             setLayout(new GridBagLayout());
@@ -127,7 +157,32 @@ public class APP extends JFrame{
             gbc.weightx = 0;
             gbc.anchor = GridBagConstraints.NORTH;
 
-            //list work in a table
+            MyTableModel model = new MyTableModel();
+            TableRowSorter sorter = new TableRowSorter<MyTableModel>(model);
+            JTable table = new JTable(model);
+            table.setRowSorter(sorter);
+            table.setFillsViewportHeight(true);
+            table.setAutoCreateRowSorter(true);
+            add(scroll = new JScrollPane(table), gbc);
+        }
+
+        class MyTableModel extends AbstractTableModel{
+
+            String[] headers = {"Finished", "Title", "Author", "Publication", "Type", "Length", "Comments"};
+            Object[][] data = {{"temp", "way longer temp to fill space", "temp", "temp", "temp", "temp", "temp", "temp", "temp"}};
+            
+            public int getColumnCount() {
+                return headers.length;
+            }
+            public int getRowCount() {
+                return data.length;
+            }
+            public String getColumnName(int col) {
+                return headers[col];
+            }
+            public Object getValueAt(int row, int col) {
+                return data[row][col];
+            }
         }
     }
 
