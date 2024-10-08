@@ -2,6 +2,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import javax.swing.border.*;
 
 public class NewWork {
@@ -140,9 +147,25 @@ public class NewWork {
             confirm.addActionListener(new ActionListener(){ //adds an action listener to the confirm button
                 public void actionPerformed(ActionEvent ae){
                     //creates an instance of work that fetches all information from fields of the fieldpane GUI component 
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy"); //formatter for local date
+                    LocalDate date = LocalDate.parse(FieldPane.getFinishedDate(), formatter);
                     Work tempName = new Work(FieldPane.getTitle(), FieldPane.getAuthor(), FieldPane.getPublicationDate(), 
-                    FieldPane.getFinishedDate(), FieldPane.getLength(), FieldPane.getType(), FieldPane.getComments());
+                    date, FieldPane.getLength(), FieldPane.getType(), FieldPane.getComments());
                     CONTROLLER.workList.add(tempName); //adds the new work into the works queue
+
+                    try (FileOutputStream fos = new FileOutputStream("worksData");
+                    ObjectOutputStream oos = new ObjectOutputStream(fos);) {
+                    oos.writeObject(CONTROLLER.workList); //write list into file
+                    }
+                    catch (FileNotFoundException e) { //file not found exception
+                        System.out.println("File not found : " + e);
+                        throw new RuntimeException(e);
+                    }
+                    catch (IOException ioe) { //io exception
+                        System.out.println("Error while writing data : " + ioe);
+                        ioe.printStackTrace();
+                    }
+
                     System.out.println("saved..."); //console verification of everything working (temp)
                     frame.dispose(); //exits new work window
                 }

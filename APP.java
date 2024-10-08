@@ -1,14 +1,16 @@
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableRowSorter;
-
+import java.util.List;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.time.LocalDate;
 import java.awt.event.ActionEvent;
 
 public class APP extends JFrame{
@@ -65,7 +67,7 @@ public class APP extends JFrame{
             gbc.gridy++;
             add ((new BookshelfPane2()), gbc);  
             gbc.gridy++;
-            //add((new BookshelfPane3()), gbc);  
+            add((new BookshelfPane3()), gbc);  
         }
     }
     public static class BookshelfPane1 extends JPanel{
@@ -111,48 +113,93 @@ public class APP extends JFrame{
             ImageIcon fin = new ImageIcon(scaledMagIcon); //make an icon from rescaled image
             add(new JButton(fin), gbc); //button with magnifying glass icon
         }
-
-        public static String getSearch() {
-            return searchField.getText();
-        }
     }
+
     public static class BookshelfPane3 extends JPanel{
         public JScrollPane scroll;
+        public TableRowSorter<MyTableModel> sorter;
+        public JTable table;
 
         public BookshelfPane3(){
             setLayout(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
-            setBackground(new java.awt.Color(103, 181, 124));
+            setBackground(new java.awt.Color(191, 211, 193));
             gbc.gridx = 0;
             gbc.gridy = 0;
             gbc.weightx = 0;
             gbc.anchor = GridBagConstraints.NORTH;
 
             MyTableModel model = new MyTableModel();
-            TableRowSorter sorter = new TableRowSorter<MyTableModel>(model);
-            JTable table = new JTable(model);
+            sorter = new TableRowSorter<MyTableModel>(model);
+            table = new JTable(model);
             table.setRowSorter(sorter);
             table.setFillsViewportHeight(true);
             table.setAutoCreateRowSorter(true);
             add(scroll = new JScrollPane(table), gbc);
+
+            BookshelfPane2.searchField.getDocument().addDocumentListener(
+                new DocumentListener() {
+                public void changedUpdate(DocumentEvent e) {
+                    newFilter();
+                }
+                public void insertUpdate(DocumentEvent e) {
+                    newFilter();
+                }
+                public void removeUpdate(DocumentEvent e) {
+                    newFilter();
+                }
+            });
+        }
+        private void newFilter() {
+            RowFilter<MyTableModel, Object> rf = null; //if current expression doesn't parse, don't update.
+            try {
+                rf = RowFilter.regexFilter(BookshelfPane2.searchField.getText(), 0);
+            } catch (java.util.regex.PatternSyntaxException e) {
+                return;
+            }
+            sorter.setRowFilter(rf);
         }
 
         class MyTableModel extends AbstractTableModel{
-
-            String[] headers = {"Finished", "Title", "Author", "Publication", "Type", "Length", "Comments"};
-            Object[][] data = {{"temp", "way longer temp to fill space", "temp", "temp", "temp", "temp", "temp", "temp", "temp"}};
             
+            private String[] headers = {"Finished", "Title", "Author", "Publication", "Type", "Length", "Comments"};
+            int rows = CONTROLLER.workList.size();
+            List<Work> wList = CONTROLLER.workList;
+            public MyTableModel(){
+                for(int i = 0; i < rows; i++){
+                    String fin = wList.get(i).getFinished().toString();
+                    String tit = wList.get(i).getTitle();
+                    String aut = wList.get(i).getAuthor();
+                    String pub = wList.get(i).getPublished();
+                    String typ = wList.get(i).getType();
+                    String len = wList.get(i).getLength();
+                    String com = wList.get(i).getComments();
+
+                    String[] data = {fin, tit, aut, pub, typ, len, com};
+                    
+                }
+            }
             public int getColumnCount() {
                 return headers.length;
             }
             public int getRowCount() {
-                return data.length;
+                return wList.size();
             }
             public String getColumnName(int col) {
                 return headers[col];
             }
             public Object getValueAt(int row, int col) {
-                return data[row][col];
+                Work w = wList.get(row);
+                switch(col){
+                    case 0: return w.getFinished();
+                    case 1: return w.getTitle();
+                    case 2: return w.getAuthor();
+                    case 3: return w.getPublished();
+                    case 4: return w.getType();
+                    case 5: return w.getLength();
+                    case 6: return w.getComments();
+                }
+                return null;
             }
         }
     }
