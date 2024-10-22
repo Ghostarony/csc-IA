@@ -4,13 +4,14 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableRowSorter;
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.time.LocalDate;
+import java.text.SimpleDateFormat;
 import java.awt.event.ActionEvent;
 
 public class APP extends JFrame{
@@ -92,6 +93,7 @@ public class APP extends JFrame{
     }
     public static class BookshelfPane2 extends JPanel{
         private static JTextField searchField;
+        private static JButton searchButton;
 
         public BookshelfPane2(){
             setLayout(new GridBagLayout());
@@ -111,49 +113,50 @@ public class APP extends JFrame{
             ImageIcon magIcon = new ImageIcon("mag_icon.png"); //create icon from image in folder
             Image scaledMagIcon = magIcon.getImage().getScaledInstance(11, 11, Image.SCALE_SMOOTH); //make icon into image and rescale image
             ImageIcon fin = new ImageIcon(scaledMagIcon); //make an icon from rescaled image
-            add(new JButton(fin), gbc); //button with magnifying glass icon
+            add(searchButton = new JButton(fin), gbc); //button with magnifying glass icon
         }
     }
 
     public static class BookshelfPane3 extends JPanel{
-        public JScrollPane scroll;
-        public TableRowSorter<MyTableModel> sorter;
         public JTable table;
+        public JScrollPane scroll;
+        public MyTableModel model = new MyTableModel();
+        public TableRowSorter<MyTableModel> sorter;
+        private JButton sB = BookshelfPane2.searchButton;
+        private JTextField sF = BookshelfPane2.searchField;
 
         public BookshelfPane3(){
-            setLayout(new GridBagLayout());
-            GridBagConstraints gbc = new GridBagConstraints();
-            setBackground(new java.awt.Color(191, 211, 193));
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            gbc.weightx = 0;
-            gbc.anchor = GridBagConstraints.NORTH;
+            setLayout(new BorderLayout());
+            setBackground(new java.awt.Color(0,0,0));
 
-            MyTableModel model = new MyTableModel();
             sorter = new TableRowSorter<MyTableModel>(model);
             table = new JTable(model);
             table.setRowSorter(sorter);
             table.setFillsViewportHeight(true);
-            table.setAutoCreateRowSorter(true);
-            add(scroll = new JScrollPane(table), gbc);
+            add(scroll = new JScrollPane(table), BorderLayout.CENTER);
 
-            BookshelfPane2.searchField.getDocument().addDocumentListener(
-                new DocumentListener() {
-                public void changedUpdate(DocumentEvent e) {
-                    newFilter();
+            sF.getDocument().addDocumentListener(
+                new DocumentListener()
+                {
+                   public void changedUpdate(DocumentEvent e)
+                   {
+                       newFilter();
+                   }
+                   public void insertUpdate(DocumentEvent e)
+                   {
+                       newFilter();
+                   }
+                   public void removeUpdate(DocumentEvent e)
+                   {
+                      newFilter();
+                   }
                 }
-                public void insertUpdate(DocumentEvent e) {
-                    newFilter();
-                }
-                public void removeUpdate(DocumentEvent e) {
-                    newFilter();
-                }
-            });
+             );
         }
         private void newFilter() {
             RowFilter<MyTableModel, Object> rf = null; //if current expression doesn't parse, don't update.
             try {
-                rf = RowFilter.regexFilter(BookshelfPane2.searchField.getText(), 0);
+                rf = RowFilter.regexFilter("(?i)" + "^" + sF.getText());
             } catch (java.util.regex.PatternSyntaxException e) {
                 return;
             }
@@ -166,18 +169,6 @@ public class APP extends JFrame{
             int rows = CONTROLLER.workList.size();
             List<Work> wList = CONTROLLER.workList;
             public MyTableModel(){
-                for(int i = 0; i < rows; i++){
-                    String fin = wList.get(i).getFinished().toString();
-                    String tit = wList.get(i).getTitle();
-                    String aut = wList.get(i).getAuthor();
-                    String pub = wList.get(i).getPublished();
-                    String typ = wList.get(i).getType();
-                    String len = wList.get(i).getLength();
-                    String com = wList.get(i).getComments();
-
-                    String[] data = {fin, tit, aut, pub, typ, len, com};
-                    
-                }
             }
             public int getColumnCount() {
                 return headers.length;

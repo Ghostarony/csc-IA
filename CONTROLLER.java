@@ -2,7 +2,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.swing.SwingUtilities;
 
@@ -29,9 +28,5 @@ public class CONTROLLER {
             workList.add(w);
         }
         workList.sort((o1,o2) -> o1.getFinished().compareTo(o2.getFinished()));
-        workList.sort(Collections.reverseOrder());
-        for(Work w : list){
-            System.out.println(w.getFinished());
-        }
     }
 }
