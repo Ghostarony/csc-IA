@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.border.*;
 
@@ -147,8 +149,14 @@ public class NewWork {
             confirm.addActionListener(new ActionListener(){ //adds an action listener to the confirm button
                 public void actionPerformed(ActionEvent ae){
                     //creates an instance of work that fetches all information from fields of the fieldpane GUI component 
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy"); //formatter for local date
-                    LocalDate date = LocalDate.parse(FieldPane.getFinishedDate(), formatter);
+                    String form = determineDateFormat(FieldPane.getFinishedDate().toString()); //determine date format to use for date formatt .,ing
+                    if(form == null){
+                        //if date inputted is not in a valid format -> pop up info window
+                        JOptionPane.showMessageDialog(frame, "Invalid date formatting!\nTry one of the following:\ndd/mm/yyyy\ndd-mm-yyyy", 
+                                                "Invalid date!", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(form); //formatter for local date
+                    LocalDate date = LocalDate.parse(FieldPane.getFinishedDate(), formatter); //parses a date from string input
                     Work tempName = new Work(FieldPane.getTitle(), FieldPane.getAuthor(), FieldPane.getPublicationDate(), 
                     date, FieldPane.getLength(), FieldPane.getType(), FieldPane.getComments());
                     CONTROLLER.workList.add(tempName); //adds the new work into the works queue
@@ -169,7 +177,7 @@ public class NewWork {
                     System.out.println("saved..."); //console verification of everything working (temp)
                     frame.dispose(); //exits new work window
                 }
-             });
+            });
 
             gbc.gridx++;
             add(new JLabel("       "), gbc); //button spacer
@@ -177,5 +185,25 @@ public class NewWork {
             add((cancel = new JButton("Cancel")), gbc); //creates a button labeled cancel
             cancel.addActionListener((ActionEvent e) -> frame.dispose()); //action listener on button to close window
         }
+    }
+    //hashmap for all possible ways that date could be formatted
+    private static final Map<String, String> DATE_FORMAT_REGEXPS = new HashMap<String, String>() {{
+        put("^\\d{8}$", "yyyyMMdd");
+        put("^\\d{1,2}-\\d{1,2}-\\d{4}$", "dd-MM-yyyy");
+        put("^\\d{4}-\\d{1,2}-\\d{1,2}$", "yyyy-MM-dd");
+        put("^\\d{1,2}/\\d{1,2}/\\d{4}$", "dd/MM/yyyy");
+        put("^\\d{1,2}/\\d{1,2}/\\d{1,2}$", "dd/MM/yy");
+        put("^\\d{4}/\\d{1,2}/\\d{1,2}$", "yyyy/MM/dd");
+        put("^\\d{1,2}\\s[a-z]{3}\\s\\d{4}$", "dd MMM yyyy");
+        put("^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}$", "dd MMMM yyyy");
+        put("^\\d{4}\\d{1,2}\\d{1,2}$", "yyyy-MM-dd");
+    }};
+    public static String determineDateFormat(String dateString) {
+        for (String regexp : DATE_FORMAT_REGEXPS.keySet()) {
+            if (dateString.toLowerCase().matches(regexp)) {
+                return DATE_FORMAT_REGEXPS.get(regexp); //returns value of the hashmap key that matched input
+            }
+        }
+        return null; // Unknown format.
     }
 }
