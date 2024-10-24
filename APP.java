@@ -1,25 +1,23 @@
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableRowSorter;
 import java.util.List;
-import java.util.regex.PatternSyntaxException;
-import java.awt.*;
-import java.awt.event.ActionListener;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.text.SimpleDateFormat;
-import java.awt.event.ActionEvent;
 
 public class APP extends JFrame{
     public static JFrame frame;
 
     public APP(){
         frame = new JFrame("The lovely book tracker <3");
-        frame.setSize(1024,600); //give the window a set size un-fullscreened
+        frame.setSize(1024,620); //give the window a set size un-fullscreened
         frame.setLocationRelativeTo(null); //make centered when un-fullscreened
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH); //make fullscreen by default
         frame.setVisible(true);
@@ -38,6 +36,7 @@ public class APP extends JFrame{
                 try (FileOutputStream fos = new FileOutputStream("worksData");
                     ObjectOutputStream oos = new ObjectOutputStream(fos);) {
                     oos.writeObject(CONTROLLER.workList); //write list into file
+                    System.out.println("serialized");
                 }
                 catch (FileNotFoundException e) { //file not found exception
                     System.out.println("File not found : " + e);
@@ -64,11 +63,13 @@ public class APP extends JFrame{
             gbc.fill = GridBagConstraints.BOTH;
             gbc.insets = new Insets(4, 4, 4, 4);
 
-            add((new BookshelfPane1()), gbc);
+            add(new BookshelfPane1(), gbc);
             gbc.gridy++;
-            add ((new BookshelfPane2()), gbc);  
+            add(new BookshelfPane2(), gbc);  
             gbc.gridy++;
-            add((new BookshelfPane3()), gbc);  
+            add(new BookshelfPane3(), gbc);  
+            gbc.gridy++;
+            add(new BookshelfPane4(), gbc);
         }
     }
     public static class BookshelfPane1 extends JPanel{
@@ -83,7 +84,7 @@ public class APP extends JFrame{
             gbc.weightx = 0;
             gbc.anchor = GridBagConstraints.NORTH;
 
-            add((newWork = new JButton("Add new work")), gbc);
+            add(newWork = new JButton("Add new work"), gbc);
             newWork.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent ae){
                     SwingUtilities.invokeLater(() -> new NewWork());
@@ -93,7 +94,6 @@ public class APP extends JFrame{
     }
     public static class BookshelfPane2 extends JPanel{
         private static JTextField searchField;
-        private static JButton searchButton;
 
         public BookshelfPane2(){
             setLayout(new GridBagLayout());
@@ -111,23 +111,27 @@ public class APP extends JFrame{
             add(searchField = new JTextField(30), gbc); //textfield for searching
             gbc.gridx++;
             ImageIcon magIcon = new ImageIcon("mag_icon.png"); //create icon from image in folder
-            Image scaledMagIcon = magIcon.getImage().getScaledInstance(11, 11, Image.SCALE_SMOOTH); //make icon into image and rescale image
+            Image scaledMagIcon = magIcon.getImage().getScaledInstance(15, 15, Image.SCALE_SMOOTH); //make icon into image and rescale image
             ImageIcon fin = new ImageIcon(scaledMagIcon); //make an icon from rescaled image
-            add(searchButton = new JButton(fin), gbc); //button with magnifying glass icon
+            add(new JLabel("  "), gbc); //spacer
+            gbc.gridx++;
+            add(new JLabel(fin), gbc); //add magnifying glass icon
+
         }
     }
 
     public static class BookshelfPane3 extends JPanel{
-        public JTable table;
+        public static JTable table;
         public JScrollPane scroll;
         public MyTableModel model = new MyTableModel();
         public TableRowSorter<MyTableModel> sorter;
-        private JButton sB = BookshelfPane2.searchButton;
         private JTextField sF = BookshelfPane2.searchField;
+        public static String selection;
+        public int viewRow;
+        public static int modelRow;
 
         public BookshelfPane3(){
             setLayout(new BorderLayout());
-            setBackground(new java.awt.Color(0,0,0));
 
             sorter = new TableRowSorter<MyTableModel>(model);
             table = new JTable(model);
@@ -151,7 +155,22 @@ public class APP extends JFrame{
                       newFilter();
                    }
                 }
-             );
+            );
+
+            model.addTableModelListener(new TableModelListener() {
+                public void tableChanged(TableModelEvent e) {
+                    table.setModel(model);
+                }
+            });
+
+            table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+                public void valueChanged(ListSelectionEvent event){
+                    viewRow = table.getSelectedRow();
+                    modelRow = table.convertRowIndexToModel(viewRow);
+                    selection = table.getValueAt(modelRow, 1).toString();
+                    //System.out.println(selection);
+                }
+            });
         }
         private void newFilter() {
             RowFilter<MyTableModel, Object> rf = null; //if current expression doesn't parse, don't update.
@@ -192,6 +211,48 @@ public class APP extends JFrame{
                 }
                 return null;
             }
+        }
+    }
+
+    public static class BookshelfPane4 extends JPanel{
+        public JButton edit, delete;
+        public BookshelfPane4(){
+            setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            setBackground(new java.awt.Color(191, 211, 193));
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.weightx = 0;
+            gbc.anchor = GridBagConstraints.NORTH;
+
+            System.out.println(BookshelfPane3.selection);
+
+            add(edit = new JButton("Edit selected work"), gbc);
+            edit.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent edit){
+                    SwingUtilities.invokeLater(() -> new EditWork());
+                }
+            });
+            gbc.gridx++;
+            add(new JLabel("  "), gbc);
+            gbc.gridx++;
+            add(delete = new JButton("Delete selected work"), gbc);
+            delete.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent del){
+                    int choice = JOptionPane.showConfirmDialog(null, "Do you want to delete " + "'" + BookshelfPane3.selection + "'" + " from bookshelf permanently?", 
+                                                   "Confirmation", JOptionPane.YES_NO_OPTION);
+                    System.out.println(BookshelfPane3.selection);
+                    if(choice == JOptionPane.YES_OPTION){
+                        for(Work w : CONTROLLER.workList){
+                            System.out.println(w.getTitle() + ":" + BookshelfPane3.selection);
+                            if(w.getTitle().equals(BookshelfPane3.selection)){
+                                CONTROLLER.workList.remove(w);
+                            }
+                        }
+                    }
+                        
+                }
+            });
         }
     }
 
