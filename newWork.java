@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.swing.border.*;
 
 public class NewWork {
@@ -46,6 +45,7 @@ public class NewWork {
     public static class FieldPane extends JPanel{
         public static JTextField title, author, publication, finished, length;
         public static JTextArea comments;
+        @SuppressWarnings("rawtypes")
         public static JComboBox typelist;
 
         public FieldPane(){
@@ -101,7 +101,7 @@ public class NewWork {
             //creates comments text component and text area component
             add(new JLabel("Comments: "), gbc);
             gbc.gridy++;
-            add((comments = new JTextArea(5, 20)),gbc);
+            add((comments = new JTextArea(5, 20)), gbc);
             comments.setLineWrap(true); //sets line wrapping for the text area to true
             gbc.gridy++;
 
@@ -135,7 +135,7 @@ public class NewWork {
     }
 
     public static class ButtonPane extends JPanel{
-        private JButton confirm, cancel;
+        public JButton confirm, cancel;
         public String title, name;
     
         public ButtonPane(){
@@ -172,8 +172,7 @@ public class NewWork {
                     catch (IOException ioe) { //io exception
                         System.out.println("Error while writing data : " + ioe);
                         ioe.printStackTrace();
-                    }
-
+                    }   
                     System.out.println("saved..."); //console verification of everything working (temp)
                     frame.dispose(); //exits new work window
                 }

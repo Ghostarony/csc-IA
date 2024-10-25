@@ -27,6 +27,6 @@ public class CONTROLLER {
         for(Work w : list){
             workList.add(w);
         }
-        workList.sort((o1,o2) -> o1.getFinished().compareTo(o2.getFinished()));
+        workList.sort((o1,o2) -> o2.getFinished().compareTo(o1.getFinished())); //sorts list with newest date last
     }
 }
