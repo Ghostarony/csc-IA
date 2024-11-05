@@ -1,4 +1,9 @@
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.AbstractTableModel;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,8 +15,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
-import javax.swing.border.*;
 
 public class EditWork {
     public static JFrame frame; //declare frame
@@ -101,6 +106,7 @@ public class EditWork {
             gbc.gridy++;
             String[] typeStrings = {"Physical book", "E-book", "Web novel", "Fanfic", "Comic", "Other", "Unspecified"};
             add((typelist = new JComboBox(typeStrings)), gbc);
+            typelist.setSelectedItem(setter.getType());
             gbc.gridy++;
 
             //creates comments text component and text area component
@@ -185,9 +191,11 @@ public class EditWork {
                         System.out.println("Error while writing data : " + ioe);
                         ioe.printStackTrace();
                     }
-
                     System.out.println("saved..."); //console verification of everything working (temp)
                     frame.dispose(); //exits new work window
+                    MyTableModel mod = new MyTableModel();
+                    APP.BookshelfPane3.table.setModel(mod);
+                    
                 }
             });
 
@@ -196,6 +204,36 @@ public class EditWork {
             gbc.gridx++;
             add((cancel = new JButton("Cancel")), gbc); //creates a button labeled cancel
             cancel.addActionListener((ActionEvent e) -> frame.dispose()); //action listener on button to close window
+        }
+        class MyTableModel extends AbstractTableModel{
+            
+            private String[] headers = {"Finished", "Title", "Author", "Publication", "Type", "Length", "Comments"};
+            int rows = CONTROLLER.workList.size();
+            List<Work> wList = CONTROLLER.workList;
+            public MyTableModel(){
+            }
+            public int getColumnCount() {
+                return headers.length;
+            }
+            public int getRowCount() {
+                return wList.size();
+            }
+            public String getColumnName(int col) {
+                return headers[col];
+            }
+            public Object getValueAt(int row, int col) {
+                Work w = wList.get(row);
+                switch(col){
+                    case 0: return w.getFinished();
+                    case 1: return w.getTitle();
+                    case 2: return w.getAuthor();
+                    case 3: return w.getPublished();
+                    case 4: return w.getType();
+                    case 5: return w.getLength();
+                    case 6: return w.getComments();
+                }
+                return null;
+            }
         }
     }
     //hashmap for all possible ways that date could be formatted
