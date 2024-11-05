@@ -6,8 +6,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableRowSorter;
 import java.util.List;
@@ -16,19 +14,14 @@ public class APP extends JFrame{
     public static JFrame frame;
 
     public APP(){
-        frame = new JFrame("The lovely book tracker <3");
+        frame = new JFrame("Bookshelf");
         frame.setSize(1024,620); //give the window a set size un-fullscreened
         frame.setLocationRelativeTo(null); //make centered when un-fullscreened
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH); //make fullscreen by default
         frame.setVisible(true);
 
-        //tabs
-        JTabbedPane tabbedPane = new JTabbedPane(); //created the tab layout
-        tabbedPane.addTab("Bookshelf", new bookshelfPanelProperties()); //add bookshelf tab
-        tabbedPane.addTab("Statistics", new statsPanelProperties());
-        tabbedPane.addTab("Goals", new goalsPanelProperties());
-        frame.add(tabbedPane); //add tabbedpane to the jframe
-        tabbedPane.setVisible(true); //set visible
+        frame.add(new bookshelfPanelProperties());
+        frame.setVisible(true);
 
         frame.addWindowListener(new java.awt.event.WindowAdapter() { //implement a listener for closing the window
             @Override
@@ -70,6 +63,8 @@ public class APP extends JFrame{
             add(new BookshelfPane3(), gbc);  
             gbc.gridy++;
             add(new BookshelfPane4(), gbc);
+            gbc.gridy++;
+            add(new BookshelfPane5(), gbc);
         }
     }
     public static class BookshelfPane1 extends JPanel{
@@ -137,6 +132,7 @@ public class APP extends JFrame{
             table = new JTable(model);
             table.setRowSorter(sorter);
             table.setFillsViewportHeight(true);
+            table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             add(scroll = new JScrollPane(table), BorderLayout.CENTER);
 
             sF.getDocument().addDocumentListener(
@@ -157,25 +153,18 @@ public class APP extends JFrame{
                 }
             );
 
-            model.addTableModelListener(new TableModelListener() {
-                public void tableChanged(TableModelEvent e) {
-                    table.setModel(model);
-                }
-            });
-
             table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
                 public void valueChanged(ListSelectionEvent event){
                     viewRow = table.getSelectedRow();
                     modelRow = table.convertRowIndexToModel(viewRow);
                     selection = table.getValueAt(modelRow, 1).toString();
-                    //System.out.println(selection);
                 }
             });
         }
         private void newFilter() {
             RowFilter<MyTableModel, Object> rf = null; //if current expression doesn't parse, don't update.
             try {
-                rf = RowFilter.regexFilter("(?i)" + "^" + sF.getText());
+                rf = RowFilter.regexFilter("(?i)^.*" + sF.getText() + ".*");
             } catch (java.util.regex.PatternSyntaxException e) {
                 return;
             }
@@ -213,6 +202,36 @@ public class APP extends JFrame{
             }
         }
     }
+    class MyTableModel extends AbstractTableModel{
+            
+            private String[] headers = {"Finished", "Title", "Author", "Publication", "Type", "Length", "Comments"};
+            int rows = CONTROLLER.workList.size();
+            List<Work> wList = CONTROLLER.workList;
+            public MyTableModel(){
+            }
+            public int getColumnCount() {
+                return headers.length;
+            }
+            public int getRowCount() {
+                return wList.size();
+            }
+            public String getColumnName(int col) {
+                return headers[col];
+            }
+            public Object getValueAt(int row, int col) {
+                Work w = wList.get(row);
+                switch(col){
+                    case 0: return w.getFinished();
+                    case 1: return w.getTitle();
+                    case 2: return w.getAuthor();
+                    case 3: return w.getPublished();
+                    case 4: return w.getType();
+                    case 5: return w.getLength();
+                    case 6: return w.getComments();
+                }
+                return null;
+            }
+        }
 
     public static class BookshelfPane4 extends JPanel{
         public JButton edit, delete;
@@ -225,12 +244,12 @@ public class APP extends JFrame{
             gbc.weightx = 0;
             gbc.anchor = GridBagConstraints.NORTH;
 
-            System.out.println(BookshelfPane3.selection);
-
             add(edit = new JButton("Edit selected work"), gbc);
             edit.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent edit){
-                    SwingUtilities.invokeLater(() -> new EditWork());
+                    if(BookshelfPane3.selection != null){
+                        SwingUtilities.invokeLater(() -> new EditWork());
+                    } 
                 }
             });
             gbc.gridx++;
@@ -239,48 +258,84 @@ public class APP extends JFrame{
             add(delete = new JButton("Delete selected work"), gbc);
             delete.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent del){
-                    int choice = JOptionPane.showConfirmDialog(null, "Do you want to delete " + "'" + BookshelfPane3.selection + "'" + " from bookshelf permanently?", 
-                                                   "Confirmation", JOptionPane.YES_NO_OPTION);
-                    System.out.println(BookshelfPane3.selection);
-                    if(choice == JOptionPane.YES_OPTION){
-                        for(Work w : CONTROLLER.workList){
-                            System.out.println(w.getTitle() + ":" + BookshelfPane3.selection);
-                            if(w.getTitle().equals(BookshelfPane3.selection)){
-                                CONTROLLER.workList.remove(w);
+                    if(BookshelfPane3.selection != null){
+                        int choice = JOptionPane.showConfirmDialog(null, "Do you want to delete " + "'" + BookshelfPane3.selection + "'" + " from bookshelf permanently?", 
+                                                   "Delete?", JOptionPane.YES_NO_OPTION);
+                        if(choice == JOptionPane.YES_OPTION){
+                            for(Work w : CONTROLLER.workList){
+                                if(w.getTitle().equals(BookshelfPane3.selection)){
+                                    CONTROLLER.workList.remove(w);
+                                }
                             }
+                            MyTableModel mod = new MyTableModel();
+                            APP.BookshelfPane3.table.setModel(mod);
                         }
-                    }
-                        
+                    } 
+                    MyTableModel mod = new MyTableModel();
+                    APP.BookshelfPane3.table.setModel(mod);  
                 }
             });
         }
-    }
-
-    public static class statsPanelProperties extends JPanel{
-    
-        public statsPanelProperties() {
-            setLayout(new GridBagLayout());
-            GridBagConstraints gbc = new GridBagConstraints();
-            setBackground(new java.awt.Color(177, 224, 223));
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            gbc.anchor = GridBagConstraints.WEST;
-            gbc.fill = GridBagConstraints.BOTH;
-            gbc.insets = new Insets(4, 4, 4, 4);    
+        class MyTableModel extends AbstractTableModel{
+            
+            private String[] headers = {"Finished", "Title", "Author", "Publication", "Type", "Length", "Comments"};
+            int rows = CONTROLLER.workList.size();
+            List<Work> wList = CONTROLLER.workList;
+            public MyTableModel(){
+            }
+            public int getColumnCount() {
+                return headers.length;
+            }
+            public int getRowCount() {
+                return wList.size();
+            }
+            public String getColumnName(int col) {
+                return headers[col];
+            }
+            public Object getValueAt(int row, int col) {
+                Work w = wList.get(row);
+                switch(col){
+                    case 0: return w.getFinished();
+                    case 1: return w.getTitle();
+                    case 2: return w.getAuthor();
+                    case 3: return w.getPublished();
+                    case 4: return w.getType();
+                    case 5: return w.getLength();
+                    case 6: return w.getComments();
+                }
+                return null;
+            }
         }
     }
+    public static class BookshelfPane5 extends JPanel{
+        public int wordCount, workCount;
+        public JButton edit, delete;
 
-    public static class goalsPanelProperties extends JPanel{
-    
-        public goalsPanelProperties() {
+        public BookshelfPane5(){
             setLayout(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
-            setBackground(new java.awt.Color(239, 199, 194));
+            setBackground(new java.awt.Color(191, 211, 193));
             gbc.gridx = 0;
             gbc.gridy = 0;
-            gbc.anchor = GridBagConstraints.WEST;
-            gbc.fill = GridBagConstraints.BOTH;
-            gbc.insets = new Insets(4, 4, 4, 4);    
+            gbc.weightx = 0;
+            gbc.anchor = GridBagConstraints.NORTH;
+
+            for(Work w : CONTROLLER.workList){  
+                try{
+                    wordCount += Integer.parseInt(w.getLength().replace(" ", ""));
+                }
+                catch (NumberFormatException ne){
+                    System.out.println("Uncountable int...");
+                }
+                workCount++;
+            }
+            add(new JLabel("You have read " + workCount + " works altogether since " + CONTROLLER.workList.get(CONTROLLER.workList.size() -1).getFinished()), gbc);
+            gbc.gridy++;
+            add(new JLabel("In total you have read " + String.format("%,d", wordCount) + " words."), gbc);
+            gbc.gridy++;
+            add(new JLabel("You have read approximately an amount equaling " 
+                            + wordCount/95000 + " adult fiction books."), gbc);
+
         }
     }
 }
