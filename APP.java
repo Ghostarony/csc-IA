@@ -14,21 +14,30 @@ public class APP extends JFrame{
     public static JFrame frame;
 
     public APP(){
+        //create frame
         frame = new JFrame("Bookshelf");
-        frame.setSize(1024,620); //give the window a set size un-fullscreened
-        frame.setLocationRelativeTo(null); //make centered when un-fullscreened
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH); //make fullscreen by default
+        //give the window a set size un-fullscreened
+        frame.setSize(1024,620);
+        //make centered when un-fullscreened
+        frame.setLocationRelativeTo(null); 
+        //make fullscreen by default
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
         frame.setVisible(true);
 
+        //add gui components to frame
         frame.add(new bookshelfPanelProperties());
         frame.setVisible(true);
 
-        frame.addWindowListener(new java.awt.event.WindowAdapter() { //implement a listener for closing the window
+        //implement a listener for closing the window
+        frame.addWindowListener(new java.awt.event.WindowAdapter() { 
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                //try-catch for serializing the worklist
                 try (FileOutputStream fos = new FileOutputStream("worksData");
                     ObjectOutputStream oos = new ObjectOutputStream(fos);) {
-                    oos.writeObject(CONTROLLER.workList); //write list into file
+                    //write list into file
+                    oos.writeObject(CONTROLLER.workList);
+                    //terminal confirmation
                     System.out.println("serialized");
                 }
                 catch (FileNotFoundException e) { //file not found exception
@@ -47,30 +56,18 @@ public class APP extends JFrame{
     public static class bookshelfPanelProperties extends JPanel{
     
         public bookshelfPanelProperties() {
-            setLayout(new GridBagLayout());
-            GridBagConstraints gbc = new GridBagConstraints();
+            setLayout(new BorderLayout());
             setBackground(new java.awt.Color(191, 211, 193));
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            gbc.anchor = GridBagConstraints.WEST;
-            gbc.fill = GridBagConstraints.BOTH;
-            gbc.insets = new Insets(4, 4, 4, 4);
-
-            add(new BookshelfPane1(), gbc);
-            gbc.gridy++;
-            add(new BookshelfPane2(), gbc);  
-            gbc.gridy++;
-            add(new BookshelfPane3(), gbc);  
-            gbc.gridy++;
-            add(new BookshelfPane4(), gbc);
-            gbc.gridy++;
-            add(new BookshelfPane5(), gbc);
+            
+            add(new NorthPanel(), BorderLayout.NORTH);
+            add(new JLabel("              "), BorderLayout.EAST); //spacer
+            add(new CenterPanel(), BorderLayout.CENTER);
+            add(new SouthPanel(), BorderLayout.SOUTH);
+            add(new JLabel("              "), BorderLayout.WEST); //spacer
         }
     }
-    public static class BookshelfPane1 extends JPanel{
-        private JButton newWork;
-
-        public BookshelfPane1(){
+    public static class NorthPanel extends JPanel{
+        public NorthPanel(){
             setLayout(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
             setBackground(new java.awt.Color(191, 211, 193));
@@ -79,18 +76,45 @@ public class APP extends JFrame{
             gbc.weightx = 0;
             gbc.anchor = GridBagConstraints.NORTH;
 
+            add(new JLabel("   "), gbc); //spacer
+            gbc.gridy++;
+            add(new JLabel("   "), gbc); //spacer
+            gbc.gridy++;
+            add(new NewWorkPanel(), gbc);
+            gbc.gridy++;
+            add(new SearchPanel(), gbc);
+            gbc.gridy++;
+            add(new JLabel("   "), gbc); //spacer
+
+        }
+    }
+    public static class NewWorkPanel extends JPanel{
+        private JButton newWork;
+
+        public NewWorkPanel(){
+            setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            setBackground(new java.awt.Color(191, 211, 193));
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.weightx = 0;
+            gbc.anchor = GridBagConstraints.NORTH;
+
+            //creating a new work button
             add(newWork = new JButton("Add new work"), gbc);
+            //action listener for the button
             newWork.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent ae){
+                    //invoke a new instance of newWork window creation
                     SwingUtilities.invokeLater(() -> new NewWork());
                 }
             });
         }
     }
-    public static class BookshelfPane2 extends JPanel{
+    public static class SearchPanel extends JPanel{
         private static JTextField searchField;
 
-        public BookshelfPane2(){
+        public SearchPanel(){
             setLayout(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
             setBackground(new java.awt.Color(191, 211, 193));
@@ -105,51 +129,60 @@ public class APP extends JFrame{
             gbc.gridx++;
             add(searchField = new JTextField(30), gbc); //textfield for searching
             gbc.gridx++;
-            ImageIcon magIcon = new ImageIcon("mag_icon.png"); //create icon from image in folder
-            Image scaledMagIcon = magIcon.getImage().getScaledInstance(15, 15, Image.SCALE_SMOOTH); //make icon into image and rescale image
-            ImageIcon fin = new ImageIcon(scaledMagIcon); //make an icon from rescaled image
+            //create icon from image in folder
+            ImageIcon magIcon = new ImageIcon("mag_icon.png"); 
+            //make icon into image and rescale image
+            Image scaledMagIcon = magIcon.getImage().getScaledInstance(15, 15, Image.SCALE_SMOOTH); 
+            //make an icon from rescaled image
+            ImageIcon fin = new ImageIcon(scaledMagIcon); 
             add(new JLabel("  "), gbc); //spacer
             gbc.gridx++;
-            add(new JLabel(fin), gbc); //add magnifying glass icon
+            //add magnifying glass icon
+            add(new JLabel(fin), gbc); 
 
         }
     }
 
-    public static class BookshelfPane3 extends JPanel{
+    public static class CenterPanel extends JPanel{
         public static JTable table;
         public JScrollPane scroll;
         public MyTableModel model = new MyTableModel();
         public TableRowSorter<MyTableModel> sorter;
-        private JTextField sF = BookshelfPane2.searchField;
+        private JTextField sF = SearchPanel.searchField;
         public static String selection;
-        public int viewRow;
+        public static int viewRow;
         public static int modelRow;
 
-        public BookshelfPane3(){
+        public CenterPanel(){
             setLayout(new BorderLayout());
 
-            sorter = new TableRowSorter<MyTableModel>(model);
+            //crete table for data display
             table = new JTable(model);
+            //create sorter for table
+            sorter = new TableRowSorter<MyTableModel>(model);
+            //add sorter to table
             table.setRowSorter(sorter);
+            //set that table fills height view
             table.setFillsViewportHeight(true);
             table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            setColumns();
             add(scroll = new JScrollPane(table), BorderLayout.CENTER);
 
             sF.getDocument().addDocumentListener(
                 new DocumentListener()
                 {
-                   public void changedUpdate(DocumentEvent e)
-                   {
-                       newFilter();
-                   }
-                   public void insertUpdate(DocumentEvent e)
-                   {
-                       newFilter();
-                   }
-                   public void removeUpdate(DocumentEvent e)
-                   {
-                      newFilter();
-                   }
+                    public void changedUpdate(DocumentEvent e)
+                    {
+                        newFilter();
+                    }
+                    public void insertUpdate(DocumentEvent e)
+                    {
+                        newFilter();
+                    }
+                    public void removeUpdate(DocumentEvent e)
+                    {
+                        newFilter();
+                    }
                 }
             );
 
@@ -161,81 +194,58 @@ public class APP extends JFrame{
                 }
             });
         }
+        public static void setColumns(){
+            table.getColumnModel().getColumn(0).setMinWidth(90);
+            table.getColumnModel().getColumn(0).setMaxWidth(90);
+            table.getColumnModel().getColumn(2).setMinWidth(150);
+            table.getColumnModel().getColumn(2).setMaxWidth(200);
+            table.getColumnModel().getColumn(3).setMinWidth(70);
+            table.getColumnModel().getColumn(3).setMaxWidth(70);
+            table.getColumnModel().getColumn(4).setMinWidth(100);
+            table.getColumnModel().getColumn(4).setMaxWidth(300);
+            table.getColumnModel().getColumn(5).setMinWidth(70);
+            table.getColumnModel().getColumn(5).setMaxWidth(70);
+        }
+        //search filter
         private void newFilter() {
             RowFilter<MyTableModel, Object> rf = null; //if current expression doesn't parse, don't update.
             try {
-                rf = RowFilter.regexFilter("(?i)^.*" + sF.getText() + ".*");
-            } catch (java.util.regex.PatternSyntaxException e) {
+                //regex filter: not case sensitive and "includes"-type search
+                rf = RowFilter.regexFilter("(?i)^.*" + sF.getText() + ".*"); 
+            } catch (java.util.regex.PatternSyntaxException e) { //error catch
                 return;
             }
-            sorter.setRowFilter(rf);
+            sorter.setRowFilter(rf); //display only works mathcing search
         }
 
-        class MyTableModel extends AbstractTableModel{
-            
-            private String[] headers = {"Finished", "Title", "Author", "Publication", "Type", "Length", "Comments"};
-            int rows = CONTROLLER.workList.size();
-            List<Work> wList = CONTROLLER.workList;
-            public MyTableModel(){
-            }
-            public int getColumnCount() {
-                return headers.length;
-            }
-            public int getRowCount() {
-                return wList.size();
-            }
-            public String getColumnName(int col) {
-                return headers[col];
-            }
-            public Object getValueAt(int row, int col) {
-                Work w = wList.get(row);
-                switch(col){
-                    case 0: return w.getFinished();
-                    case 1: return w.getTitle();
-                    case 2: return w.getAuthor();
-                    case 3: return w.getPublished();
-                    case 4: return w.getType();
-                    case 5: return w.getLength();
-                    case 6: return w.getComments();
-                }
-                return null;
-            }
+        
+    }
+        
+    public static class SouthPanel extends JPanel{
+        public SouthPanel(){
+            setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            setBackground(new java.awt.Color(191, 211, 193));
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.weightx = 0;
+            gbc.anchor = GridBagConstraints.NORTH;
+
+            add(new JLabel("   "), gbc); //spacer
+            gbc.gridy++;
+            add(new EditAndDeletePanel(), gbc);
+            gbc.gridy++;
+            add(new StatisticPanel(), gbc);
+            gbc.gridy++;
+            add(new JLabel("   "), gbc); //spacer
+            gbc.gridy++;
+            add(new JLabel("   "), gbc); //spacer
         }
     }
-    class MyTableModel extends AbstractTableModel{
-            
-            private String[] headers = {"Finished", "Title", "Author", "Publication", "Type", "Length", "Comments"};
-            int rows = CONTROLLER.workList.size();
-            List<Work> wList = CONTROLLER.workList;
-            public MyTableModel(){
-            }
-            public int getColumnCount() {
-                return headers.length;
-            }
-            public int getRowCount() {
-                return wList.size();
-            }
-            public String getColumnName(int col) {
-                return headers[col];
-            }
-            public Object getValueAt(int row, int col) {
-                Work w = wList.get(row);
-                switch(col){
-                    case 0: return w.getFinished();
-                    case 1: return w.getTitle();
-                    case 2: return w.getAuthor();
-                    case 3: return w.getPublished();
-                    case 4: return w.getType();
-                    case 5: return w.getLength();
-                    case 6: return w.getComments();
-                }
-                return null;
-            }
-        }
 
-    public static class BookshelfPane4 extends JPanel{
+    public static class EditAndDeletePanel extends JPanel{
         public JButton edit, delete;
-        public BookshelfPane4(){
+        public EditAndDeletePanel(){
             setLayout(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
             setBackground(new java.awt.Color(191, 211, 193));
@@ -247,7 +257,7 @@ public class APP extends JFrame{
             add(edit = new JButton("Edit selected work"), gbc);
             edit.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent edit){
-                    if(BookshelfPane3.selection != null){
+                    if(CenterPanel.selection != null){
                         SwingUtilities.invokeLater(() -> new EditWork());
                     } 
                 }
@@ -258,60 +268,37 @@ public class APP extends JFrame{
             add(delete = new JButton("Delete selected work"), gbc);
             delete.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent del){
-                    if(BookshelfPane3.selection != null){
-                        int choice = JOptionPane.showConfirmDialog(null, "Do you want to delete " + "'" + BookshelfPane3.selection + "'" + " from bookshelf permanently?", 
-                                                   "Delete?", JOptionPane.YES_NO_OPTION);
+                    if(CenterPanel.selection != null){
+                        int choice = JOptionPane.showConfirmDialog(null, 
+                                    "Do you want to delete " + "'" + CenterPanel.selection + "'" + " from bookshelf permanently?", 
+                                    "Delete?", JOptionPane.YES_NO_OPTION);
+                                    
                         if(choice == JOptionPane.YES_OPTION){
-                            for(Work w : CONTROLLER.workList){
-                                if(w.getTitle().equals(BookshelfPane3.selection)){
-                                    CONTROLLER.workList.remove(w);
-                                }
+                            int index = CenterPanel.table.getSelectedRow();
+                            System.out.println(index);
+                            try {
+                                ((MyTableModel) CenterPanel.table.getModel()).removeRow(index);
+                                CenterPanel.table.clearSelection();
+                                System.out.println("Work " + CenterPanel.selection + " was deleted");
                             }
-                            MyTableModel mod = new MyTableModel();
-                            APP.BookshelfPane3.table.setModel(mod);
+                            catch (Exception ex) {
+                                //ex.printStackTrace(); // Print the full stack trace to the console
+                                //System.out.println("Deletion error: " + ex.getMessage()); // Log the specific error message
+                            }
+                            CenterPanel.setColumns();
                         }
-                    } 
-                    MyTableModel mod = new MyTableModel();
-                    APP.BookshelfPane3.table.setModel(mod);  
+                    }   
                 }
             });
         }
-        class MyTableModel extends AbstractTableModel{
-            
-            private String[] headers = {"Finished", "Title", "Author", "Publication", "Type", "Length", "Comments"};
-            int rows = CONTROLLER.workList.size();
-            List<Work> wList = CONTROLLER.workList;
-            public MyTableModel(){
-            }
-            public int getColumnCount() {
-                return headers.length;
-            }
-            public int getRowCount() {
-                return wList.size();
-            }
-            public String getColumnName(int col) {
-                return headers[col];
-            }
-            public Object getValueAt(int row, int col) {
-                Work w = wList.get(row);
-                switch(col){
-                    case 0: return w.getFinished();
-                    case 1: return w.getTitle();
-                    case 2: return w.getAuthor();
-                    case 3: return w.getPublished();
-                    case 4: return w.getType();
-                    case 5: return w.getLength();
-                    case 6: return w.getComments();
-                }
-                return null;
-            }
-        }
+
+        
     }
-    public static class BookshelfPane5 extends JPanel{
+    public static class StatisticPanel extends JPanel{
         public int wordCount, workCount;
         public JButton edit, delete;
 
-        public BookshelfPane5(){
+        public StatisticPanel(){
             setLayout(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
             setBackground(new java.awt.Color(191, 211, 193));
@@ -329,7 +316,7 @@ public class APP extends JFrame{
                 }
                 workCount++;
             }
-            add(new JLabel("You have read " + workCount + " works altogether since " + CONTROLLER.workList.get(CONTROLLER.workList.size() -1).getFinished()), gbc);
+            add(new JLabel("You have read " + workCount + " works altogether since " + CONTROLLER.workList.get(CONTROLLER.workList.size() -1).getFinished() + "."), gbc);
             gbc.gridy++;
             add(new JLabel("In total you have read " + String.format("%,d", wordCount) + " words."), gbc);
             gbc.gridy++;

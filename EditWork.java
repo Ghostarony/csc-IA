@@ -66,7 +66,7 @@ public class EditWork {
             gbc.fill = GridBagConstraints.HORIZONTAL;
 
             for(Work w : CONTROLLER.workList){
-                if(w.getTitle().equals(APP.BookshelfPane3.selection)){
+                if(w.getTitle().equals(APP.CenterPanel.selection)){
                     setter = w;
                 }
             }
@@ -194,7 +194,7 @@ public class EditWork {
                     System.out.println("saved..."); //console verification of everything working (temp)
                     frame.dispose(); //exits new work window
                     MyTableModel mod = new MyTableModel();
-                    APP.BookshelfPane3.table.setModel(mod);
+                    APP.CenterPanel.table.setModel(mod);
                     
                 }
             });
