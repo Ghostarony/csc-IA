@@ -6,9 +6,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableRowSorter;
-import java.util.List;
 
 public class APP extends JFrame{
     public static JFrame frame;
@@ -272,7 +270,7 @@ public class APP extends JFrame{
                         int choice = JOptionPane.showConfirmDialog(null, 
                                     "Do you want to delete " + "'" + CenterPanel.selection + "'" + " from bookshelf permanently?", 
                                     "Delete?", JOptionPane.YES_NO_OPTION);
-                                    
+
                         if(choice == JOptionPane.YES_OPTION){
                             int index = CenterPanel.table.getSelectedRow();
                             System.out.println(index);
@@ -295,8 +293,7 @@ public class APP extends JFrame{
         
     }
     public static class StatisticPanel extends JPanel{
-        public int wordCount, workCount;
-        public JButton edit, delete;
+        private int wordCount, workCount;
 
         public StatisticPanel(){
             setLayout(new GridBagLayout());

@@ -3,6 +3,8 @@ import javax.swing.table.AbstractTableModel;
 
 public class MyTableModel extends AbstractTableModel{
     private List<Work> data;
+    private String[] headers = {"Finished", "Title", "Author", "Publication", "Type", "Length", "Comments"};
+    private List<Work> wList = CONTROLLER.workList;
 
     public MyTableModel() {
         this.data = CONTROLLER.workList; // Initialize the list
@@ -11,22 +13,20 @@ public class MyTableModel extends AbstractTableModel{
     public MyTableModel(List<Work> data) {
         this.data = data; // Allow passing an existing list
     }
-            
-    private String[] headers = {"Finished", "Title", "Author", "Publication", "Type", "Length", "Comments"};
-    int rows = CONTROLLER.workList.size();
-    List<Work> wList = CONTROLLER.workList;
 
     public int getColumnCount() {
         return headers.length;
     }
+
     public int getRowCount() {
         return wList.size();
     }
+
     public String getColumnName(int col) {
         return headers[col];
     }
+
     public void removeRow(int rowIndex) {
-        System.out.println(rowIndex);
         if (data == null) {
             throw new IllegalStateException("Data list is not initialized.");
         }
@@ -37,9 +37,9 @@ public class MyTableModel extends AbstractTableModel{
             data.remove(rowIndex);
             System.out.println("Row deleted...");
             fireTableDataChanged();
-        }
-        
+        }     
     }
+
     public Object getValueAt(int row, int col) {
         Work w = wList.get(row);
         switch(col){
