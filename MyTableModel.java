@@ -34,8 +34,11 @@ public class MyTableModel extends AbstractTableModel{
             throw new IndexOutOfBoundsException("Invalid row index: " + rowIndex);
         }
         else{
+            //remove indexed data
             data.remove(rowIndex);
+            //terminal promt
             System.out.println("Row deleted...");
+            //update table that data has changed
             fireTableDataChanged();
         }     
     }

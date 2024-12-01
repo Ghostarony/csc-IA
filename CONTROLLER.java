@@ -6,27 +6,34 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 public class CONTROLLER {
-    public static List<Work> workList = new ArrayList<>(); //creates a list to store works in
+    //creates a list to store works in
+    public static List<Work> workList = new ArrayList<>(); 
     @SuppressWarnings("unchecked") //suppress unchecked conversions
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(()-> new APP()); //new instance of APP / start program
+        //new instance of APP / start program
+        SwingUtilities.invokeLater(()-> new APP()); 
 
         ArrayList<Work> list = null; //new list with data null
+        //deserialization try-catch
         try (FileInputStream fis = new FileInputStream("worksData");
             ObjectInputStream ois = new ObjectInputStream(fis);) {
-            list = (ArrayList<Work>)ois.readObject(); //fill list with all objects from file //warning suppressed
+            //fill list with all objects from file //warning suppressed
+            list = (ArrayList<Work>)ois.readObject(); 
         }
         catch (IOException ioe) {
             ioe.printStackTrace();
         }
         catch (ClassNotFoundException c) {
-            System.out.println("Class not found: " + c); //error message to terminal
+            //error message to terminal
+            System.out.println("Class not found: " + c); 
             c.printStackTrace();
         }
 
+        //loop through all elements in list and add them to worklist
         for(Work w : list){
             workList.add(w);
         }
-        workList.sort((o1,o2) -> o2.getFinished().compareTo(o1.getFinished())); //sorts list with newest date last
+        //sorts worklist with newest date first
+        workList.sort((o1,o2) -> o2.getFinished().compareTo(o1.getFinished())); 
     }
 }

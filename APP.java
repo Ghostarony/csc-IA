@@ -20,10 +20,9 @@ public class APP extends JFrame{
         frame.setLocationRelativeTo(null); 
         //make fullscreen by default
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
-        frame.setVisible(true);
-
         //add gui components to frame
         frame.add(new bookshelfPanelProperties());
+        //set frame visible
         frame.setVisible(true);
 
         //implement a listener for closing the window
@@ -38,15 +37,15 @@ public class APP extends JFrame{
                     //terminal confirmation
                     System.out.println("serialized");
                 }
-                catch (FileNotFoundException e) { //file not found exception
+                catch (FileNotFoundException e) { //file not found exception and log
                     System.out.println("File not found : " + e);
                     throw new RuntimeException(e);
                 }
-                catch (IOException ioe) { //io exception
+                catch (IOException ioe) { //io exception and log to terminal
                     System.out.println("Error while writing data : " + ioe);
                     ioe.printStackTrace();
                 }
-                System.exit(0);
+                System.exit(0); //stop running program
             }
         });
     }
@@ -54,9 +53,12 @@ public class APP extends JFrame{
     public static class bookshelfPanelProperties extends JPanel{
     
         public bookshelfPanelProperties() {
+            //set swing layout
             setLayout(new BorderLayout());
+            //background color
             setBackground(new java.awt.Color(191, 211, 193));
             
+            //add all panels into one
             add(new NorthPanel(), BorderLayout.NORTH);
             add(new JLabel("              "), BorderLayout.EAST); //spacer
             add(new CenterPanel(), BorderLayout.CENTER);
@@ -67,13 +69,15 @@ public class APP extends JFrame{
     public static class NorthPanel extends JPanel{
         public NorthPanel(){
             setLayout(new GridBagLayout());
-            GridBagConstraints gbc = new GridBagConstraints();
             setBackground(new java.awt.Color(191, 211, 193));
+            GridBagConstraints gbc = new GridBagConstraints();
             gbc.gridx = 0;
             gbc.gridy = 0;
             gbc.weightx = 0;
-            gbc.anchor = GridBagConstraints.NORTH;
+            //anchor components to top
+            gbc.anchor = GridBagConstraints.NORTH; 
 
+            //set workpanel and searchpanel to northpanel
             add(new JLabel("   "), gbc); //spacer
             gbc.gridy++;
             add(new JLabel("   "), gbc); //spacer
@@ -103,7 +107,7 @@ public class APP extends JFrame{
             //action listener for the button
             newWork.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent ae){
-                    //invoke a new instance of newWork window creation
+                    //invoke a new instance of NewWork window creation
                     SwingUtilities.invokeLater(() -> new NewWork());
                 }
             });
@@ -123,9 +127,10 @@ public class APP extends JFrame{
 
             add(new JLabel("  ")); //spacer
             gbc.gridy++;
-            add(new JLabel("Search:  "), gbc); //label search
+            //add and lable searchfield
+            add(new JLabel("Search:  "), gbc);
             gbc.gridx++;
-            add(searchField = new JTextField(30), gbc); //textfield for searching
+            add(searchField = new JTextField(30), gbc);
             gbc.gridx++;
             //create icon from image in folder
             ImageIcon magIcon = new ImageIcon("mag_icon.png"); 
@@ -147,9 +152,8 @@ public class APP extends JFrame{
         public MyTableModel model = new MyTableModel();
         public TableRowSorter<MyTableModel> sorter;
         private JTextField sF = SearchPanel.searchField;
-        public static String selection;
-        public static int viewRow;
-        public static int modelRow;
+        public static String selection, selectionComments;
+        public static int viewRow, modelRow;
 
         public CenterPanel(){
             setLayout(new BorderLayout());
@@ -162,36 +166,43 @@ public class APP extends JFrame{
             table.setRowSorter(sorter);
             //set that table fills height view
             table.setFillsViewportHeight(true);
+            //only allow one row to be selected at a time
             table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            setColumns();
+            setColumns(); //call setcolumns method
+            //add scrollpane to the panel to the center
             add(scroll = new JScrollPane(table), BorderLayout.CENTER);
 
+            //documentlistener for changes in searchfield
             sF.getDocument().addDocumentListener(
                 new DocumentListener()
-                {
+                { //update table filter for all events
                     public void changedUpdate(DocumentEvent e)
-                    {
+                    { //if content is changed
                         newFilter();
                     }
                     public void insertUpdate(DocumentEvent e)
-                    {
+                    { //if text is added
                         newFilter();
                     }
                     public void removeUpdate(DocumentEvent e)
-                    {
+                    { //if text is deleted
                         newFilter();
                     }
                 }
             );
 
+            //adding a listener for the selected row and column of the table
             table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
                 public void valueChanged(ListSelectionEvent event){
                     viewRow = table.getSelectedRow();
                     modelRow = table.convertRowIndexToModel(viewRow);
                     selection = table.getValueAt(modelRow, 1).toString();
+                    selectionComments = table.getValueAt(modelRow, 6).toString();
                 }
             });
         }
+
+        //method for setting width boundaries for table columns
         public static void setColumns(){
             table.getColumnModel().getColumn(0).setMinWidth(90);
             table.getColumnModel().getColumn(0).setMaxWidth(90);
@@ -206,7 +217,8 @@ public class APP extends JFrame{
         }
         //search filter
         private void newFilter() {
-            RowFilter<MyTableModel, Object> rf = null; //if current expression doesn't parse, don't update.
+            //if current expression doesn't parse, don't update
+            RowFilter<MyTableModel, Object> rf = null; 
             try {
                 //regex filter: not case sensitive and "includes"-type search
                 rf = RowFilter.regexFilter("(?i)^.*" + sF.getText() + ".*"); 
@@ -229,6 +241,7 @@ public class APP extends JFrame{
             gbc.weightx = 0;
             gbc.anchor = GridBagConstraints.NORTH;
 
+            //add editanddelete and statisticpanel to southpanel
             add(new JLabel("   "), gbc); //spacer
             gbc.gridy++;
             add(new EditAndDeletePanel(), gbc);
@@ -252,37 +265,48 @@ public class APP extends JFrame{
             gbc.weightx = 0;
             gbc.anchor = GridBagConstraints.NORTH;
 
+            //create an edit work button
             add(edit = new JButton("Edit selected work"), gbc);
+            //add an actionlistener to the button
             edit.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent edit){
+                    //as long as a work is selected...
                     if(CenterPanel.selection != null){
+                        //invoke an editwork window
                         SwingUtilities.invokeLater(() -> new EditWork());
                     } 
                 }
             });
             gbc.gridx++;
-            add(new JLabel("  "), gbc);
+            add(new JLabel("  "), gbc); //spacer
             gbc.gridx++;
+            //add a delete work button
             add(delete = new JButton("Delete selected work"), gbc);
+            //add an action listener to the button
             delete.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent del){
+                    //as long as selection isn't null
                     if(CenterPanel.selection != null){
+                        //show a confimation prompt window with yes/no options 
                         int choice = JOptionPane.showConfirmDialog(null, 
                                     "Do you want to delete " + "'" + CenterPanel.selection + "'" + " from bookshelf permanently?", 
                                     "Delete?", JOptionPane.YES_NO_OPTION);
-
+                        //if chosen option is yes
                         if(choice == JOptionPane.YES_OPTION){
+                            //get selected row index
                             int index = CenterPanel.table.getSelectedRow();
-                            System.out.println(index);
                             try {
+                                //call delete row as a table model method
                                 ((MyTableModel) CenterPanel.table.getModel()).removeRow(index);
+                                //clear selection
                                 CenterPanel.table.clearSelection();
+                                //log to terminal that deletion was a success
                                 System.out.println("Work " + CenterPanel.selection + " was deleted");
                             }
-                            catch (Exception ex) {
-                                //ex.printStackTrace(); // Print the full stack trace to the console
-                                //System.out.println("Deletion error: " + ex.getMessage()); // Log the specific error message
+                            catch (Exception ex) { //terminal error notice
+                                System.out.println("Deletion error...");
                             }
+                            //update columns
                             CenterPanel.setColumns();
                         }
                     }   
@@ -304,19 +328,25 @@ public class APP extends JFrame{
             gbc.weightx = 0;
             gbc.anchor = GridBagConstraints.NORTH;
 
+            //go through worklist
             for(Work w : CONTROLLER.workList){  
                 try{
+                    //count the total wordcount from all works
                     wordCount += Integer.parseInt(w.getLength().replace(" ", ""));
                 }
-                catch (NumberFormatException ne){
+                catch (NumberFormatException ne){ //exception log
                     System.out.println("Uncountable int...");
                 }
+                //count the number of works as well
                 workCount++;
             }
+            //label of works read
             add(new JLabel("You have read " + workCount + " works altogether since " + CONTROLLER.workList.get(CONTROLLER.workList.size() -1).getFinished() + "."), gbc);
             gbc.gridy++;
+            //label of total words left
             add(new JLabel("In total you have read " + String.format("%,d", wordCount) + " words."), gbc);
             gbc.gridy++;
+            //total words divided by average novel length
             add(new JLabel("You have read approximately an amount equaling " 
                             + wordCount/95000 + " adult fiction books."), gbc);
 

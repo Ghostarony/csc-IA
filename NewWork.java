@@ -13,33 +13,42 @@ import java.util.Map;
 import javax.swing.border.*;
 
 public class NewWork {
-    public static JFrame frame; //declare frame
+    public static JFrame frame;
 
     public NewWork() {
+        //define frame
         frame = new JFrame("Add new work");
-        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(new workPaneProperties()); //add JPanel workPaneProperties into the frame frame
-        frame.setSize(260, 450); //sets a size for frame
-        frame.setLocationRelativeTo(null); //makes frame's relative location to the center of the screen
-        frame.setVisible(true); //sets frame visible
+        //add JPanel workPaneProperties into the frame frame
+        frame.add(new workPaneProperties());
+        //sets a size for frame 
+        frame.setSize(260, 450); 
+        //makes frame's relative location to the center of the screen
+        frame.setLocationRelativeTo(null); 
+        //sets frame visible
+        frame.setVisible(true); 
     }
 
     public static class workPaneProperties extends JPanel{
     
         public workPaneProperties() {
-            setLayout(new GridBagLayout()); //creates a new grid bag layout manager
+            //creates a new gridbag layout manager
+            setLayout(new GridBagLayout()); 
+            //background color
             setBackground(new java.awt.Color(233, 242, 234));
             GridBagConstraints gbc = new GridBagConstraints();
-            //sets intial component positions:
+            //sets intial component positions
             gbc.gridx = 0;
             gbc.gridy = 0;
-            gbc.anchor = GridBagConstraints.WEST; //sets a anchor location for components smaller than window they are located
-            gbc.fill = GridBagConstraints.BOTH; //sets fill condition to making the component fill the entire area
+            //sets a anchor location for components smaller than window they are located
+            gbc.anchor = GridBagConstraints.WEST; 
+            //sets fill condition to making the component fill the entire area
+            gbc.fill = GridBagConstraints.BOTH; 
             gbc.insets = new Insets(4, 4, 4, 4);
     
-            add((new FieldPane()), gbc); //adds FieldPane JPanel into the workPaneProperties JPanel -> into frame JFrame
+            //adds FieldPane and ButtonPane JPanels into the workPaneProperties JPanel -> into frame JFrame
+            add((new FieldPane()), gbc); 
             gbc.gridy++;
-            add((new ButtonPane()), gbc); //adds ButtonPane JPanel into -"-
+            add((new ButtonPane()), gbc);
         }
     }
     
@@ -53,9 +62,10 @@ public class NewWork {
             setLayout(new GridBagLayout());
             //sets a border around the FieldPane components:
             setBorder(new CompoundBorder(new TitledBorder("Add new work"), new EmptyBorder(8, 0, 0, 0)));
+            //background color
             setBackground(new java.awt.Color(233, 242, 234));
             GridBagConstraints gbc = new GridBagConstraints();
-            //sets intial component positions:
+            //sets intial component positions and contraints
             gbc.gridx = 0;
             gbc.gridy = 0;
             gbc.weightx = 0;
@@ -74,7 +84,8 @@ public class NewWork {
             add((author = new JTextField(20)), gbc); 
             gbc.gridy++;
 
-            gbc.fill = GridBagConstraints.NONE; //set fill condition to not resize component to fit the window
+            //set fill condition to not resize component to fit the window
+            gbc.fill = GridBagConstraints.NONE; 
             //creates publication text component and textfield component
             add(new JLabel("Published: "), gbc); 
             gbc.gridy++;
@@ -96,6 +107,7 @@ public class NewWork {
             //creates work type text component and a JComboBox component including all included work types
             add(new JLabel("Type: "), gbc);
             gbc.gridy++;
+            
             String[] typeStrings = {"Physical book", "E-book", "Web novel", "Fanfic", "Comic", "Other", "Unspecified"};
             add((typelist = new JComboBox(typeStrings)), gbc);
             gbc.gridy++;
@@ -104,10 +116,11 @@ public class NewWork {
             add(new JLabel("Comments: "), gbc);
             gbc.gridy++;
             add((comments = new JTextArea(5, 20)), gbc);
-            comments.setLineWrap(true); //sets line wrapping for the text area to true
+            //sets line wrapping for the text area to true
+            comments.setLineWrap(true); 
             gbc.gridy++;
 
-            add(new JLabel(" "), gbc); //creates some enmpty space for more pleasing layout
+            add(new JLabel(" "), gbc); //spacer
             gbc.gridy++;
         }
 
@@ -141,54 +154,66 @@ public class NewWork {
         public String title, name;
     
         public ButtonPane(){
-            setLayout(new GridBagLayout());
+            setLayout(new GridBagLayout()); //set layout of the panel
+            //set background color
             setBackground(new java.awt.Color(233, 242, 234));
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.gridx = 0;
             gbc.gridy = 0;
             gbc.anchor = GridBagConstraints.CENTER;
 
-            add((confirm = new JButton("Confirm")), gbc); //creates a new button loabeled confirm
-            confirm.addActionListener(new ActionListener(){ //adds an action listener to the confirm button
+            //creates a new button loabeled confirm
+            add((confirm = new JButton("Confirm")), gbc); 
+            //adds an action listener to the confirm button
+            confirm.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent ae){
-                    //creates an instance of work that fetches all information from fields of the fieldpane GUI component 
-                    String form = determineDateFormat(FieldPane.getFinishedDate().toString()); //determine date format to use for date formatt .,ing
+                    //determine date format to use for date formatting
+                    String form = determineDateFormat(FieldPane.getFinishedDate().toString());
                     if(form == null){
                         //if date inputted is not in a valid format -> pop up info window
                         JOptionPane.showMessageDialog(frame, "Invalid date formatting!\nTry one of the following:\ndd/mm/yyyy\ndd-mm-yyyy", 
                                                 "Invalid date!", JOptionPane.INFORMATION_MESSAGE);
                     }
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(form); //formatter for local date
-                    LocalDate date = LocalDate.parse(FieldPane.getFinishedDate(), formatter); //parses a date from string input
+                     //formatter for local date
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(form);
+                    //parses a date from string input
+                    LocalDate date = LocalDate.parse(FieldPane.getFinishedDate(), formatter);
+                    //create an instance of work with the imputted data
                     Work tempName = new Work(FieldPane.getTitle(), FieldPane.getAuthor(), FieldPane.getPublicationDate(), 
                     date, FieldPane.getLength(), FieldPane.getType(), FieldPane.getComments());
                     CONTROLLER.workList.add(tempName); //adds the new work into the works queue
 
+                    //serialization
                     try (FileOutputStream fos = new FileOutputStream("worksData");
                     ObjectOutputStream oos = new ObjectOutputStream(fos);) {
                     oos.writeObject(CONTROLLER.workList); //write list into file
                     }
-                    catch (FileNotFoundException e) { //file not found exception
+                    catch (FileNotFoundException e) { //file not found exception and log to terminal
                         System.out.println("File not found : " + e);
                         throw new RuntimeException(e);
                     }
-                    catch (IOException ioe) { //io exception
+                    catch (IOException ioe) { //catch exception and log to terminal
                         System.out.println("Error while writing data : " + ioe);
                         ioe.printStackTrace();
                     }   
-                    System.out.println("saved..."); //console verification of everything working (temp)
+                    System.out.println("saved..."); //console verification
                     frame.dispose(); //exits new work window
+                    //creates new table model
                     MyTableModel mod = new MyTableModel();
+                    //applies tablemodel to the table
                     APP.CenterPanel.table.setModel(mod);
+                    //make sure that the column widths stay
                     APP.CenterPanel.setColumns();
                 }
             });
 
             gbc.gridx++;
-            add(new JLabel("       "), gbc); //button spacer
+            add(new JLabel("       "), gbc); //spacer
             gbc.gridx++;
-            add((cancel = new JButton("Cancel")), gbc); //creates a button labeled cancel
-            cancel.addActionListener((ActionEvent e) -> frame.dispose()); //action listener on button to close window
+            //creates a button labeled cancel
+            add((cancel = new JButton("Cancel")), gbc);
+            //action listener on button to close window
+            cancel.addActionListener((ActionEvent e) -> frame.dispose()); 
         }
         
     }
@@ -206,10 +231,12 @@ public class NewWork {
     }};
     public static String determineDateFormat(String dateString) {
         for (String regexp : DATE_FORMAT_REGEXPS.keySet()) {
+            //compares input date to the hashmap of date formats
             if (dateString.toLowerCase().matches(regexp)) {
-                return DATE_FORMAT_REGEXPS.get(regexp); //returns value of the hashmap key that matched input
+                //returns value of the hashmap key that matched input
+                return DATE_FORMAT_REGEXPS.get(regexp); 
             }
         }
-        return null; // Unknown format.
+        return null; // Unknown format
     }
 }
