@@ -28,6 +28,7 @@ public class NewWork {
     
         public workPaneProperties() {
             setLayout(new GridBagLayout()); //creates a new grid bag layout manager
+            setBackground(new java.awt.Color(233, 242, 234));
             GridBagConstraints gbc = new GridBagConstraints();
             //sets intial component positions:
             gbc.gridx = 0;
@@ -52,6 +53,7 @@ public class NewWork {
             setLayout(new GridBagLayout());
             //sets a border around the FieldPane components:
             setBorder(new CompoundBorder(new TitledBorder("Add new work"), new EmptyBorder(8, 0, 0, 0)));
+            setBackground(new java.awt.Color(233, 242, 234));
             GridBagConstraints gbc = new GridBagConstraints();
             //sets intial component positions:
             gbc.gridx = 0;
@@ -140,6 +142,7 @@ public class NewWork {
     
         public ButtonPane(){
             setLayout(new GridBagLayout());
+            setBackground(new java.awt.Color(233, 242, 234));
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.gridx = 0;
             gbc.gridy = 0;
