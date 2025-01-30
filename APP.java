@@ -340,17 +340,25 @@ public class APP extends JFrame{
                 //count the number of works as well
                 workCount++;
             }
-            //label of works read
-            add(new JLabel("You have read " + workCount + " works altogether since " 
-                            + CONTROLLER.workList.get(CONTROLLER.workList.size() -1).getFinished() + "."), gbc);
-            gbc.gridy++;
-            //label of total words left
-            add(new JLabel("In total you have read " + String.format("%,d", wordCount) + " words."), gbc);
-            gbc.gridy++;
-            //total words divided by average novel length
-            add(new JLabel("You have read approximately an amount equaling " 
-                            + wordCount/95000 + " adult fiction books."), gbc);
 
+            if(!CONTROLLER.workList.isEmpty()){
+                //label of works read
+                add(new JLabel("You have read " + workCount + " works altogether since " 
+                + CONTROLLER.workList.get(CONTROLLER.workList.size() -1).getFinished() + "."), gbc);
+                //label of works read
+                add(new JLabel("You have read " + workCount + " works altogether since " 
+                + CONTROLLER.workList.get(CONTROLLER.workList.size() -1).getFinished() + "."), gbc);
+                gbc.gridy++;
+                //label of total words left
+                add(new JLabel("In total you have read " + String.format("%,d", wordCount) + " words."), gbc);
+                gbc.gridy++;
+                //total words divided by average novel length
+                add(new JLabel("You have read approximately an amount equaling " 
+                            + wordCount/95000 + " adult fiction books."), gbc);
+            }
+            else{
+                add(new JLabel("No statistics available yet."), gbc);
+            }
         }
     }
 }

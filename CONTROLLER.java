@@ -28,7 +28,10 @@ public class CONTROLLER {
             c.printStackTrace();
         }
 
-        //sorts worklist with newest date first
-        workList.sort((o1,o2) -> o2.getFinished().compareTo(o1.getFinished())); 
+        if(!workList.isEmpty()){
+            //sorts worklist with newest date first
+            workList.sort((o1,o2) -> o2.getFinished().compareTo(o1.getFinished())); 
+        }
+        
     }
 }
