@@ -4,24 +4,17 @@ import javax.swing.table.AbstractTableModel;
 public class MyTableModel extends AbstractTableModel{
     private List<Work> data;
     private String[] headers = {"Finished", "Title", "Author", "Publication", "Type", "Length", "Comments"};
-    private List<Work> wList = CONTROLLER.workList;
 
     public MyTableModel() {
         this.data = CONTROLLER.workList; // Initialize the list
     }
 
-    public MyTableModel(List<Work> data) {
-        this.data = data; // Allow passing an existing list
-    }
-
     public int getColumnCount() {
         return headers.length;
     }
-
     public int getRowCount() {
-        return wList.size();
+        return data.size();
     }
-
     public String getColumnName(int col) {
         return headers[col];
     }
@@ -36,7 +29,7 @@ public class MyTableModel extends AbstractTableModel{
         else{
             //remove indexed data
             data.remove(rowIndex);
-            //terminal promt
+            //terminal prompt
             System.out.println("Row deleted...");
             //update table that data has changed
             fireTableDataChanged();
@@ -44,7 +37,7 @@ public class MyTableModel extends AbstractTableModel{
     }
 
     public Object getValueAt(int row, int col) {
-        Work w = wList.get(row);
+        Work w = data.get(row);
         switch(col){
             case 0: return w.getFinished();
             case 1: return w.getTitle();

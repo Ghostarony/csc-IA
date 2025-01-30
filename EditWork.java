@@ -1,7 +1,5 @@
 import javax.swing.*;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
+import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -162,7 +160,6 @@ public class EditWork {
 
     public static class ButtonPane extends JPanel{
         private JButton confirm, cancel;
-        public String title, name;
     
         public ButtonPane(){
             setLayout(new GridBagLayout());
@@ -184,20 +181,21 @@ public class EditWork {
                         JOptionPane.showMessageDialog(frame, "Invalid date formatting!\nTry one of the following:\ndd/mm/yyyy\ndd-mm-yyyy", 
                                                 "Invalid date!", JOptionPane.INFORMATION_MESSAGE);
                     }
-                    //formatter for local date
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(form); 
-                    //parses a date from string input
-                    LocalDate date = LocalDate.parse(FieldPane.getFinishedDate(), formatter); 
-
-                    //update data of the work
-                    FieldPane.setter.setTitle(FieldPane.getTitle());
-                    FieldPane.setter.setAuthor(FieldPane.getAuthor());
-                    FieldPane.setter.setPublished(FieldPane.getPublicationDate());
-                    FieldPane.setter.setFinished(date);
-                    FieldPane.setter.setLength(FieldPane.getLength());
-                    FieldPane.setter.setType(FieldPane.getType());
-                    FieldPane.setter.setComments(FieldPane.getComments());
-
+                    else{
+                        //formatter for local date
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(form); 
+                        //parses a date from string input
+                        LocalDate date = LocalDate.parse(FieldPane.getFinishedDate(), formatter); 
+                        //update data of the work
+                        FieldPane.setter.setTitle(FieldPane.getTitle());
+                        FieldPane.setter.setAuthor(FieldPane.getAuthor());
+                        FieldPane.setter.setPublished(FieldPane.getPublicationDate());
+                        FieldPane.setter.setFinished(date);
+                        FieldPane.setter.setLength(FieldPane.getLength());
+                        FieldPane.setter.setType(FieldPane.getType());
+                        FieldPane.setter.setComments(FieldPane.getComments());
+                    }
+                    
                     //serialization
                     try (FileOutputStream fos = new FileOutputStream("worksData");
                     ObjectOutputStream oos = new ObjectOutputStream(fos);) {

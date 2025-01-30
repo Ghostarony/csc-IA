@@ -107,7 +107,7 @@ public class NewWork {
             //creates work type text component and a JComboBox component including all included work types
             add(new JLabel("Type: "), gbc);
             gbc.gridy++;
-            
+            //creates publication text component and textfield component
             String[] typeStrings = {"Physical book", "E-book", "Web novel", "Fanfic", "Comic", "Other", "Unspecified"};
             add((typelist = new JComboBox(typeStrings)), gbc);
             gbc.gridy++;
@@ -227,7 +227,6 @@ public class NewWork {
         put("^\\d{4}/\\d{1,2}/\\d{1,2}$", "yyyy/MM/dd");
         put("^\\d{1,2}\\s[a-z]{3}\\s\\d{4}$", "dd MMM yyyy");
         put("^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}$", "dd MMMM yyyy");
-        put("^\\d{4}\\d{1,2}\\d{1,2}$", "yyyy-MM-dd");
     }};
     public static String determineDateFormat(String dateString) {
         for (String regexp : DATE_FORMAT_REGEXPS.keySet()) {

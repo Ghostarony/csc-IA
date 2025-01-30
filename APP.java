@@ -341,7 +341,8 @@ public class APP extends JFrame{
                 workCount++;
             }
             //label of works read
-            add(new JLabel("You have read " + workCount + " works altogether since " + CONTROLLER.workList.get(CONTROLLER.workList.size() -1).getFinished() + "."), gbc);
+            add(new JLabel("You have read " + workCount + " works altogether since " 
+                            + CONTROLLER.workList.get(CONTROLLER.workList.size() -1).getFinished() + "."), gbc);
             gbc.gridy++;
             //label of total words left
             add(new JLabel("In total you have read " + String.format("%,d", wordCount) + " words."), gbc);

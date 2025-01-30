@@ -13,12 +13,11 @@ public class CONTROLLER {
         //new instance of APP / start program
         SwingUtilities.invokeLater(()-> new APP()); 
 
-        ArrayList<Work> list = null; //new list with data null
         //deserialization try-catch
         try (FileInputStream fis = new FileInputStream("worksData");
             ObjectInputStream ois = new ObjectInputStream(fis);) {
             //fill list with all objects from file //warning suppressed
-            list = (ArrayList<Work>)ois.readObject(); 
+            workList = (ArrayList<Work>)ois.readObject(); 
         }
         catch (IOException ioe) {
             ioe.printStackTrace();
@@ -29,10 +28,6 @@ public class CONTROLLER {
             c.printStackTrace();
         }
 
-        //loop through all elements in list and add them to worklist
-        for(Work w : list){
-            workList.add(w);
-        }
         //sorts worklist with newest date first
         workList.sort((o1,o2) -> o2.getFinished().compareTo(o1.getFinished())); 
     }
